@@ -3,7 +3,9 @@ package com.touchgrass.app.lock
 import com.touchgrass.app.util.Clock
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -27,6 +29,8 @@ class CommitmentLockManagerTest {
         emailServiceResult: Result<Unit> = Result.success(Unit),
     ): Triple<CommitmentLockManager, LockRepository, EmailOtpService> {
         val repo = mockk<LockRepository>(relaxUnitFun = true)
+        every { repo.lockEnabledFlow } returns flowOf(false)
+        every { repo.emailFlow } returns flowOf(savedEmail)
         coEvery { repo.pendingOtp() } returns pending
         coEvery { repo.email() } returns savedEmail
         val service = mockk<EmailOtpService>()
