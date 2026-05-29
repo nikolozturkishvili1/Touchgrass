@@ -1,0 +1,10 @@
+# The Gradle wrapper script must use LF endings or it fails to run on the
+# Linux runners used by CI (and on contributors' macOS/Linux machines).
+gradlew text eol=lf
+
+# Wrapper jar (and any jars) are binary — never apply EOL normalization, or
+# the gradle/actions/wrapper-validation checksum will no longer match.
+*.jar binary
+
+# Windows batch scripts keep CRLF.
+*.bat text eol=crlf
