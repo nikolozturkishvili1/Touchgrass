@@ -27,61 +27,63 @@ import javax.inject.Singleton
  * happened.
  */
 @Singleton
-class PauseManager @Inject constructor(
-    private val pauseRepository: PauseRepository,
-    private val clock: Clock,
-    @ApplicationScope appScope: CoroutineScope,
-) {
-    private val _pausedUntilMs = MutableStateFlow(0L)
-    val pausedUntilMs: StateFlow<Long> = _pausedUntilMs.asStateFlow()
+class PauseManager
+    @Inject
+    constructor(
+        private val pauseRepository: PauseRepository,
+        private val clock: Clock,
+        @ApplicationScope appScope: CoroutineScope,
+    ) {
+        private val _pausedUntilMs = MutableStateFlow(0L)
+        val pausedUntilMs: StateFlow<Long> = _pausedUntilMs.asStateFlow()
 
-    init {
-        // Hot-cache the disk value so isPausedNow() is non-suspending.
-        appScope.launch {
-            pauseRepository.pausedUntilMsFlow.collect { value ->
-                _pausedUntilMs.value = value
+        init {
+            // Hot-cache the disk value so isPausedNow() is non-suspending.
+            appScope.launch {
+                pauseRepository.pausedUntilMsFlow.collect { value ->
+                    _pausedUntilMs.value = value
+                }
             }
         }
-    }
 
-    /** Cheap synchronous read for the AccessibilityService hot path. */
-    fun isPausedNow(): Boolean = clock.nowMillis() < _pausedUntilMs.value
+        /** Cheap synchronous read for the AccessibilityService hot path. */
+        fun isPausedNow(): Boolean = clock.nowMillis() < _pausedUntilMs.value
 
-    /**
-     * Try to start a pause of [durationMs] starting now.
-     *
-     * Pre-conditions checked in order:
-     *  - No pause currently active. (`AlreadyPaused` if violated — cancel first.)
-     *  - Today's remaining budget can cover [durationMs]. (`BudgetExceeded` if violated.)
-     */
-    suspend fun requestPause(durationMs: Long): PauseResult {
-        if (durationMs <= 0L) return PauseResult.BudgetExceeded(remainingMsToday = remainingBudgetMsToday())
-        if (isPausedNow()) return PauseResult.AlreadyPaused
+        /**
+         * Try to start a pause of [durationMs] starting now.
+         *
+         * Pre-conditions checked in order:
+         *  - No pause currently active. (`AlreadyPaused` if violated — cancel first.)
+         *  - Today's remaining budget can cover [durationMs]. (`BudgetExceeded` if violated.)
+         */
+        suspend fun requestPause(durationMs: Long): PauseResult {
+            if (durationMs <= 0L) return PauseResult.BudgetExceeded(remainingMsToday = remainingBudgetMsToday())
+            if (isPausedNow()) return PauseResult.AlreadyPaused
 
-        val remaining = remainingBudgetMsToday()
-        if (durationMs > remaining) {
-            return PauseResult.BudgetExceeded(remainingMsToday = remaining)
+            val remaining = remainingBudgetMsToday()
+            if (durationMs > remaining) {
+                return PauseResult.BudgetExceeded(remainingMsToday = remaining)
+            }
+
+            val now = clock.nowMillis()
+            val endsAt = now + durationMs
+            val todayStart = TimeBoundaries.startOfToday(now)
+
+            pauseRepository.addBudgetConsumed(todayStart, durationMs)
+            pauseRepository.setPausedUntilMs(endsAt)
+
+            return PauseResult.Success(pauseEndsAtMs = endsAt)
         }
 
-        val now = clock.nowMillis()
-        val endsAt = now + durationMs
-        val todayStart = TimeBoundaries.startOfToday(now)
+        /** Cancel any current pause. No budget refund — see class-level KDoc. */
+        suspend fun cancelPause() {
+            pauseRepository.setPausedUntilMs(0L)
+        }
 
-        pauseRepository.addBudgetConsumed(todayStart, durationMs)
-        pauseRepository.setPausedUntilMs(endsAt)
-
-        return PauseResult.Success(pauseEndsAtMs = endsAt)
+        suspend fun remainingBudgetMsToday(): Long {
+            val today = TimeBoundaries.startOfToday(clock.nowMillis())
+            val daily = pauseRepository.dailyBudgetMsFlow.first()
+            val used = pauseRepository.budgetUsedTodayMs(today)
+            return (daily - used).coerceAtLeast(0L)
+        }
     }
-
-    /** Cancel any current pause. No budget refund — see class-level KDoc. */
-    suspend fun cancelPause() {
-        pauseRepository.setPausedUntilMs(0L)
-    }
-
-    suspend fun remainingBudgetMsToday(): Long {
-        val today = TimeBoundaries.startOfToday(clock.nowMillis())
-        val daily = pauseRepository.dailyBudgetMsFlow.first()
-        val used = pauseRepository.budgetUsedTodayMs(today)
-        return (daily - used).coerceAtLeast(0L)
-    }
-}

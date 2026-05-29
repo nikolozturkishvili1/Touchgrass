@@ -37,9 +37,10 @@ fun WelcomeStep(
             )
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Touchgrass blocks the part of social apps that's designed to keep you " +
-                    "scrolling forever. Reels, Shorts, TikTok, Spotlight. " +
-                    "The rest of those apps still works — messages, posts, search, the lot.",
+                text =
+                    "Touchgrass blocks the part of social apps that's designed to keep you " +
+                        "scrolling forever. Reels, Shorts, TikTok, Spotlight. " +
+                        "The rest of those apps still works — messages, posts, search, the lot.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

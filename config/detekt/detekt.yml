@@ -11,10 +11,12 @@ complexity:
   LongMethod:
     active: true
     threshold: 80
+    ignoreAnnotated: ['Composable']  # Compose UI functions are declarative and naturally long
   LongParameterList:
     active: true
     functionThreshold: 8
     constructorThreshold: 10
+    ignoreAnnotated: ['Composable']  # Compose screens hoist many state + event-callback params
   TooManyFunctions:
     active: false
   CyclomaticComplexMethod:
@@ -31,7 +33,14 @@ style:
     excludeCommentStatements: true
   ReturnCount:
     active: true
-    max: 4
+    max: 6  # detectors + the accessibility event handler use guard-heavy early-return dispatch
+    excludeGuardClauses: true
+  UnusedPrivateMember:
+    active: true
+    ignoreAnnotated: ['Preview']  # @Preview composables are invoked by the IDE renderer, not from code
+  UnusedParameter:
+    active: true
+    ignoreAnnotated: ['Composable']  # composable params kept for state/callback hoisting symmetry
   WildcardImport:
     active: true
     excludeImports:
@@ -67,9 +76,6 @@ exceptions:
     active: true
   SwallowedException:
     active: true
-
-formatting:
-  active: false  # ktlint owns formatting
 
 comments:
   active: true

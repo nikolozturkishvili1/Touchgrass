@@ -14,9 +14,14 @@ import javax.inject.Singleton
  * absorbs that.
  */
 @Singleton
-class BackPressBlockingStrategy @Inject constructor() : BlockingStrategy {
-    override suspend fun apply(service: AccessibilityService, surface: String) {
-        val performed = service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-        Timber.i("BackPress block applied for surface=%s success=%s", surface, performed)
+class BackPressBlockingStrategy
+    @Inject
+    constructor() : BlockingStrategy {
+        override suspend fun apply(
+            service: AccessibilityService,
+            surface: String,
+        ) {
+            val performed = service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+            Timber.i("BackPress block applied for surface=%s success=%s", surface, performed)
+        }
     }
-}

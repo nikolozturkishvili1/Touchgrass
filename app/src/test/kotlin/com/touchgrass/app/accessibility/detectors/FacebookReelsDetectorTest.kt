@@ -16,24 +16,29 @@ import org.junit.Test
  * `app/build.gradle.kts` makes the Android stubs return defaults instead of throwing.
  */
 class FacebookReelsDetectorTest {
-
     private val detector = FacebookReelsDetector()
 
-    private fun event(pkg: String?, className: String? = null): AccessibilityEvent = mockk {
-        every { packageName } returns pkg
-        every { this@mockk.className } returns className
-    }
+    private fun event(
+        pkg: String?,
+        className: String? = null,
+    ): AccessibilityEvent =
+        mockk {
+            every { packageName } returns pkg
+            every { this@mockk.className } returns className
+        }
 
     /** A node where exactly [viewId] resolves; all other ids return empty. */
-    private fun nodeWithViewId(viewId: String): AccessibilityNodeInfo = mockk {
-        every { findAccessibilityNodeInfosByViewId(any()) } answers {
-            if (firstArg<String>() == viewId) listOf(mockk(relaxed = true)) else emptyList()
+    private fun nodeWithViewId(viewId: String): AccessibilityNodeInfo =
+        mockk {
+            every { findAccessibilityNodeInfosByViewId(any()) } answers {
+                if (firstArg<String>() == viewId) listOf(mockk(relaxed = true)) else emptyList()
+            }
         }
-    }
 
-    private fun emptyNode(): AccessibilityNodeInfo = mockk {
-        every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
-    }
+    private fun emptyNode(): AccessibilityNodeInfo =
+        mockk {
+            every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
+        }
 
     // ---- packageNames ----
 
@@ -63,28 +68,31 @@ class FacebookReelsDetectorTest {
 
     @Test
     fun `detects immersive Reels viewer by ReelsViewerActivity class name`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.reels.viewer.ReelsViewerActivity"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.reels.viewer.ReelsViewerActivity"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
     @Test
     fun `detects immersive Reels viewer by ReelsWatchFragment class name (case insensitive)`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.app.reelswatchfragment"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.app.reelswatchfragment"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
     @Test
     fun `detects immersive viewer on Facebook Lite by class name`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_LITE, "com.facebook.reels.viewer.LiteReelsViewerActivity"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_LITE, "com.facebook.reels.viewer.LiteReelsViewerActivity"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
@@ -92,10 +100,11 @@ class FacebookReelsDetectorTest {
 
     @Test
     fun `detects Reels tab by ReelsTabFragment class name`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.tab.ReelsTabFragment"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.tab.ReelsTabFragment"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_TAB), result)
     }
 
@@ -103,10 +112,11 @@ class FacebookReelsDetectorTest {
     fun `detects Reels tab by WatchFeedFragment class name`() {
         // Regression: "WatchFeedFragment" contains the substring "FeedFragment". A too-broad
         // News-Feed anti-match hint once suppressed this surface before the tab check ran.
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.video.watch.WatchFeedFragment"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.video.watch.WatchFeedFragment"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_TAB), result)
     }
 
@@ -114,10 +124,11 @@ class FacebookReelsDetectorTest {
     fun `detects Reels tab by ReelsFeedFragment class name`() {
         // Regression: "ReelsFeedFragment" also contains the substring "FeedFragment" and was
         // shadowed by the same too-broad anti-match hint.
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.reels.ReelsFeedFragment"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.reels.ReelsFeedFragment"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_TAB), result)
     }
 
@@ -126,30 +137,33 @@ class FacebookReelsDetectorTest {
     @Test
     fun `detects via reels_video_player view id`() {
         val root = nodeWithViewId("${FacebookReelsDetector.PACKAGE_KATANA}:id/reels_video_player")
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "androidx.fragment.app.FragmentContainerView"),
-            root,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "androidx.fragment.app.FragmentContainerView"),
+                root,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
     @Test
     fun `detects via fallback reel_viewer_recycler view id`() {
         val root = nodeWithViewId("${FacebookReelsDetector.PACKAGE_KATANA}:id/reel_viewer_recycler")
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "FrameLayout"),
-            root,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "FrameLayout"),
+                root,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
     @Test
     fun `detects via reels_fragment_container view id on Facebook Lite`() {
         val root = nodeWithViewId("${FacebookReelsDetector.PACKAGE_LITE}:id/reels_fragment_container")
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_LITE, "FrameLayout"),
-            root,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_LITE, "FrameLayout"),
+                root,
+            )
         assertEquals(Detection.ShortFormFeed(FacebookReelsDetector.SURFACE_VIEWER), result)
     }
 
@@ -159,31 +173,34 @@ class FacebookReelsDetectorTest {
     fun `does not trigger on NewsFeedFragment even with reels-shaped className substring`() {
         // Tricky case: the foreground is the News Feed, but the class string happens to contain
         // the word "Reels" (e.g. an inline carousel hosted inside the feed fragment).
-        val result = detector.detect(
-            event(
-                FacebookReelsDetector.PACKAGE_KATANA,
-                "com.facebook.feed.NewsFeedFragment\$ReelsCarouselSection",
-            ),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(
+                    FacebookReelsDetector.PACKAGE_KATANA,
+                    "com.facebook.feed.NewsFeedFragment\$ReelsCarouselSection",
+                ),
+                null,
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
     @Test
     fun `does not trigger on plain NewsFeedFragment`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.feed.NewsFeedFragment"),
-            emptyNode(),
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.feed.NewsFeedFragment"),
+                emptyNode(),
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
     @Test
     fun `does not trigger on NewsFeedActivity`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.NewsFeedActivity"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.NewsFeedActivity"),
+                null,
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
@@ -191,19 +208,21 @@ class FacebookReelsDetectorTest {
 
     @Test
     fun `ignores generic Facebook screens with no Reels markers`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.activity.FbMainTabActivity"),
-            emptyNode(),
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "com.facebook.katana.activity.FbMainTabActivity"),
+                emptyNode(),
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
     @Test
     fun `ignores Facebook events when root is null and class is non-Reels`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, "FrameLayout"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, "FrameLayout"),
+                null,
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
@@ -215,10 +234,11 @@ class FacebookReelsDetectorTest {
 
     @Test
     fun `ignores Facebook events with null className and empty root`() {
-        val result = detector.detect(
-            event(FacebookReelsDetector.PACKAGE_KATANA, null),
-            emptyNode(),
-        )
+        val result =
+            detector.detect(
+                event(FacebookReelsDetector.PACKAGE_KATANA, null),
+                emptyNode(),
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 
@@ -234,8 +254,9 @@ class FacebookReelsDetectorTest {
         // The anti-match runs before the positive Reels checks and matches by substring, so an
         // anti-match entry that is a substring of a Reels hint turns that hint into dead code.
         // A bare "FeedFragment" once shadowed "ReelsFeedFragment" / "WatchFeedFragment".
-        val reelsHints = FacebookReelsDetector.REELS_VIEWER_CLASS_HINTS +
-            FacebookReelsDetector.REELS_TAB_CLASS_HINTS
+        val reelsHints =
+            FacebookReelsDetector.REELS_VIEWER_CLASS_HINTS +
+                FacebookReelsDetector.REELS_TAB_CLASS_HINTS
         for (antiHint in FacebookReelsDetector.NEWS_FEED_CLASS_HINTS) {
             for (reelsHint in reelsHints) {
                 assertFalse(

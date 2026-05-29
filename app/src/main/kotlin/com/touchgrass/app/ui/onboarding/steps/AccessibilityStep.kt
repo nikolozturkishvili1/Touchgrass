@@ -57,12 +57,13 @@ fun AccessibilityStep(
         )
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-    ) { granted ->
-        notificationsAllowed = granted
-        onNotificationsPermissionGranted(granted)
-    }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { granted ->
+            notificationsAllowed = granted
+            onNotificationsPermissionGranted(granted)
+        }
 
     LaunchedEffect(notificationsAllowed) {
         onNotificationsPermissionGranted(notificationsAllowed)
@@ -82,9 +83,10 @@ fun AccessibilityStep(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Touchgrass uses the Accessibility service to notice when you open a " +
-                    "reel or short — and only then. It can't read your messages, banking, " +
-                    "keyboard, or anything in apps you didn't put on the block list.",
+                text =
+                    "Touchgrass uses the Accessibility service to notice when you open a " +
+                        "reel or short — and only then. It can't read your messages, banking, " +
+                        "keyboard, or anything in apps you didn't put on the block list.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -107,8 +109,9 @@ fun AccessibilityStep(
                     title = "Notifications",
                     granted = notificationsAllowed,
                     grantedText = "Granted. You'll know if Touchgrass ever stops.",
-                    ungrantedText = "Lets us alert you if Touchgrass stops working. " +
-                        "Without it, you wouldn't know.",
+                    ungrantedText =
+                        "Lets us alert you if Touchgrass stops working. " +
+                            "Without it, you wouldn't know.",
                 )
             }
         }
@@ -151,9 +154,10 @@ private fun StatusCard(
     ungrantedText: String,
 ) {
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
@@ -173,7 +177,10 @@ private fun StatusCard(
 }
 
 @Composable
-private fun Row(title: String, granted: Boolean) {
+private fun Row(
+    title: String,
+    granted: Boolean,
+) {
     androidx.compose.foundation.layout.Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -183,12 +190,17 @@ private fun Row(title: String, granted: Boolean) {
             color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.height(0.dp))
-        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+        androidx.compose.foundation.layout
+            .Spacer(Modifier.weight(1f))
         Text(
             text = if (granted) "✓" else "—",
             style = MaterialTheme.typography.titleLarge,
-            color = if (granted) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurfaceVariant,
+            color =
+                if (granted) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                },
         )
     }
 }

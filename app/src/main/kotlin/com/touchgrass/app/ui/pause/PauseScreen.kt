@@ -77,33 +77,37 @@ fun PauseScreen(
                         Icon(Icons.Outlined.Close, contentDescription = "Close")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             )
         },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 24.dp),
         ) {
             when (state.phase) {
                 PausePhase.PickDuration -> DurationPicker(state, onPickDuration)
-                PausePhase.LockGate -> LockChallenge(
-                    purpose = "Take a peek",
-                    requiresEmail = false,
-                    onVerified = onLockChallengeVerified,
-                    onCancel = onLockChallengeCancel,
-                )
-                PausePhase.Friction -> FrictionGate(
-                    mode = state.frictionMode,
-                    onComplete = onFrictionComplete,
-                    onCancel = onFrictionCancel,
-                )
+                PausePhase.LockGate ->
+                    LockChallenge(
+                        purpose = "Take a peek",
+                        requiresEmail = false,
+                        onVerified = onLockChallengeVerified,
+                        onCancel = onLockChallengeCancel,
+                    )
+                PausePhase.Friction ->
+                    FrictionGate(
+                        mode = state.frictionMode,
+                        onComplete = onFrictionComplete,
+                        onCancel = onFrictionCancel,
+                    )
                 PausePhase.Done -> Unit // route observer navigates away
             }
         }
@@ -123,8 +127,9 @@ private fun DurationPicker(
     )
     Spacer(Modifier.height(8.dp))
     Text(
-        text = "Pick a window. Touchgrass will look the other way for that long. " +
-            "Daily cap: ${state.remainingBudgetMsToday / 60_000L} min left today.",
+        text =
+            "Pick a window. Touchgrass will look the other way for that long. " +
+                "Daily cap: ${state.remainingBudgetMsToday / 60_000L} min left today.",
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -163,10 +168,15 @@ private fun DurationOption(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (enabled) MaterialTheme.colorScheme.surface
-            else MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-        ),
+        colors =
+            CardDefaults.cardColors(
+                containerColor =
+                    if (enabled) {
+                        MaterialTheme.colorScheme.surface
+                    } else {
+                        MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                    },
+            ),
         onClick = { if (enabled) onClick() },
         enabled = enabled,
     ) {
@@ -195,11 +205,12 @@ private fun DurationOption(
 private fun PausePickerPreview() {
     TouchgrassTheme(darkTheme = false) {
         PauseScreen(
-            state = PauseUiState(
-                phase = PausePhase.PickDuration,
-                remainingBudgetMsToday = 18 * 60_000L,
-                frictionMode = FrictionMode.WaitTimer,
-            ),
+            state =
+                PauseUiState(
+                    phase = PausePhase.PickDuration,
+                    remainingBudgetMsToday = 18 * 60_000L,
+                    frictionMode = FrictionMode.WaitTimer,
+                ),
             onPickDuration = {},
             onFrictionComplete = {},
             onFrictionCancel = {},
@@ -215,12 +226,13 @@ private fun PausePickerPreview() {
 private fun PauseWaitTimerPreview() {
     TouchgrassTheme(darkTheme = false) {
         PauseScreen(
-            state = PauseUiState(
-                phase = PausePhase.Friction,
-                selectedDurationMs = 5 * 60_000L,
-                remainingBudgetMsToday = 18 * 60_000L,
-                frictionMode = FrictionMode.WaitTimer,
-            ),
+            state =
+                PauseUiState(
+                    phase = PausePhase.Friction,
+                    selectedDurationMs = 5 * 60_000L,
+                    remainingBudgetMsToday = 18 * 60_000L,
+                    frictionMode = FrictionMode.WaitTimer,
+                ),
             onPickDuration = {},
             onFrictionComplete = {},
             onFrictionCancel = {},
@@ -236,12 +248,13 @@ private fun PauseWaitTimerPreview() {
 private fun PauseMathPreview() {
     TouchgrassTheme(darkTheme = false) {
         PauseScreen(
-            state = PauseUiState(
-                phase = PausePhase.Friction,
-                selectedDurationMs = 5 * 60_000L,
-                remainingBudgetMsToday = 18 * 60_000L,
-                frictionMode = FrictionMode.MathProblem,
-            ),
+            state =
+                PauseUiState(
+                    phase = PausePhase.Friction,
+                    selectedDurationMs = 5 * 60_000L,
+                    remainingBudgetMsToday = 18 * 60_000L,
+                    frictionMode = FrictionMode.MathProblem,
+                ),
             onPickDuration = {},
             onFrictionComplete = {},
             onFrictionCancel = {},
@@ -257,12 +270,13 @@ private fun PauseMathPreview() {
 private fun PauseBudgetExceededPreview() {
     TouchgrassTheme(darkTheme = false) {
         PauseScreen(
-            state = PauseUiState(
-                phase = PausePhase.PickDuration,
-                remainingBudgetMsToday = 3 * 60_000L,
-                frictionMode = FrictionMode.WaitTimer,
-                errorMessage = "Only 3 min left in your daily pause budget.",
-            ),
+            state =
+                PauseUiState(
+                    phase = PausePhase.PickDuration,
+                    remainingBudgetMsToday = 3 * 60_000L,
+                    frictionMode = FrictionMode.WaitTimer,
+                    errorMessage = "Only 3 min left in your daily pause budget.",
+                ),
             onPickDuration = {},
             onFrictionComplete = {},
             onFrictionCancel = {},

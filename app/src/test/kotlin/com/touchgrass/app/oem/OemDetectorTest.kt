@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class OemDetectorTest {
-
     private val detector = OemDetector()
 
     @Test

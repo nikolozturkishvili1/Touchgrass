@@ -29,7 +29,10 @@ interface Detector {
      *   cheap or expensive to walk depending on the screen — be conservative.
      * @return [Detection.ShortFormFeed] if a blockable feed is in view; otherwise [Detection.NotInteresting].
      */
-    fun detect(event: AccessibilityEvent, root: AccessibilityNodeInfo?): Detection
+    fun detect(
+        event: AccessibilityEvent,
+        root: AccessibilityNodeInfo?,
+    ): Detection
 }
 
 /**
@@ -48,5 +51,7 @@ sealed interface Detection {
      *   Examples: `"youtube-shorts"`, `"instagram-reels-tab"`, `"instagram-reels-dm"`,
      *   `"tiktok-foryou"`, `"facebook-reels"`, `"snapchat-spotlight"`.
      */
-    data class ShortFormFeed(val surface: String) : Detection
+    data class ShortFormFeed(
+        val surface: String,
+    ) : Detection
 }

@@ -20,21 +20,21 @@ import javax.inject.Singleton
  * the current snapshot and unsubscribes; it does not subscribe forever.
  */
 @Singleton
-class DataStoreHeartbeat @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
-    private val clock: Clock,
-) : Heartbeat {
+class DataStoreHeartbeat
+    @Inject
+    constructor(
+        private val dataStore: DataStore<Preferences>,
+        private val clock: Clock,
+    ) : Heartbeat {
+        override suspend fun beat() {
+            val now = clock.elapsedMillis()
+            dataStore.edit { it[KEY_LAST_BEAT_ELAPSED_MS] = now }
+        }
 
-    override suspend fun beat() {
-        val now = clock.elapsedMillis()
-        dataStore.edit { it[KEY_LAST_BEAT_ELAPSED_MS] = now }
-    }
+        override suspend fun lastBeatElapsedMillis(): Long? =
+            dataStore.data.map { it[KEY_LAST_BEAT_ELAPSED_MS] }.first()
 
-    override suspend fun lastBeatElapsedMillis(): Long? {
-        return dataStore.data.map { it[KEY_LAST_BEAT_ELAPSED_MS] }.first()
+        private companion object {
+            val KEY_LAST_BEAT_ELAPSED_MS = longPreferencesKey("accessibility_heartbeat_elapsed_ms")
+        }
     }
-
-    private companion object {
-        val KEY_LAST_BEAT_ELAPSED_MS = longPreferencesKey("accessibility_heartbeat_elapsed_ms")
-    }
-}

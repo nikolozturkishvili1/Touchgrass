@@ -63,11 +63,12 @@ fun RandomCodeFriction(
             fontSize = 22.sp,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp),
         )
         Spacer(Modifier.height(24.dp))
         OutlinedTextField(
@@ -95,5 +96,4 @@ fun RandomCodeFriction(
 }
 
 /** Visual grouping of the code into 5-char chunks separated by spaces, for legibility. */
-private fun formatCodeForDisplay(code: String): String =
-    code.chunked(5).joinToString(separator = " ")
+private fun formatCodeForDisplay(code: String): String = code.chunked(5).joinToString(separator = " ")

@@ -24,7 +24,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataModule {
-
     private const val PREFERENCES_NAME = "touchgrass_prefs"
     private const val DATABASE_NAME = "touchgrass.db"
 
@@ -34,8 +33,9 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
-        context.touchgrassDataStore
+    fun provideDataStore(
+        @ApplicationContext context: Context,
+    ): DataStore<Preferences> = context.touchgrassDataStore
 
     @Provides
     @Singleton
@@ -43,12 +43,15 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideTouchgrassDatabase(@ApplicationContext context: Context): TouchgrassDatabase =
-        Room.databaseBuilder(
-            context.applicationContext,
-            TouchgrassDatabase::class.java,
-            DATABASE_NAME,
-        )
+    fun provideTouchgrassDatabase(
+        @ApplicationContext context: Context,
+    ): TouchgrassDatabase =
+        Room
+            .databaseBuilder(
+                context.applicationContext,
+                TouchgrassDatabase::class.java,
+                DATABASE_NAME,
+            )
             // No fallbackToDestructiveMigration in V1: there are no migrations yet, and we
             // never want to silently drop user data. Add `addMigrations(...)` here when the
             // schema changes.

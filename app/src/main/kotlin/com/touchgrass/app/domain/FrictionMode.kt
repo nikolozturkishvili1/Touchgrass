@@ -26,7 +26,6 @@ enum class FrictionMode {
 
     companion object {
         /** Safe parser tolerant of obsolete persisted values. */
-        fun fromName(name: String?): FrictionMode =
-            name?.let { entries.firstOrNull { it.name == name } } ?: WaitTimer
+        fun fromName(name: String?): FrictionMode = name?.let { entries.firstOrNull { it.name == name } } ?: WaitTimer
     }
 }

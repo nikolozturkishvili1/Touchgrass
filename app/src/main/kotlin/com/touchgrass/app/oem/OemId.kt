@@ -14,7 +14,9 @@ package com.touchgrass.app.oem
  * [Generic] is the fallback for devices we don't have a tailored walkthrough for — show the
  * stock Android battery-optimization opt-out flow.
  */
-enum class OemId(val key: String) {
+enum class OemId(
+    val key: String,
+) {
     Samsung("samsung"),
     Xiaomi("xiaomi"),
     OnePlus("oneplus"),

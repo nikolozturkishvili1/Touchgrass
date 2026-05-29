@@ -8,7 +8,12 @@ package com.touchgrass.app.service
  */
 sealed interface WatchdogHealth {
     data object Healthy : WatchdogHealth
+
     data object AccessibilityNotEnabled : WatchdogHealth
+
     data object NeverBeaten : WatchdogHealth
-    data class Stale(val sinceLastBeatMs: Long) : WatchdogHealth
+
+    data class Stale(
+        val sinceLastBeatMs: Long,
+    ) : WatchdogHealth
 }

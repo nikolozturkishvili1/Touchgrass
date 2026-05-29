@@ -9,7 +9,10 @@ import timber.log.Timber
  * Never used in release builds with a real API key — see [LockModule].
  */
 class FakeEmailOtpService : EmailOtpService {
-    override suspend fun sendOtp(email: String, code: String): Result<Unit> {
+    override suspend fun sendOtp(
+        email: String,
+        code: String,
+    ): Result<Unit> {
         Timber.w(
             "[FakeEmailOtpService] would send OTP %s to %s — set RESEND_API_KEY in gradle.properties for real delivery",
             code,

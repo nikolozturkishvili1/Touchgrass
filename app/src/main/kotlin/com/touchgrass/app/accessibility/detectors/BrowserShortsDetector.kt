@@ -57,105 +57,115 @@ import javax.inject.Singleton
  *    if Samsung renames it.
  */
 @Singleton
-class BrowserShortsDetector @Inject constructor() : Detector {
+class BrowserShortsDetector
+    @Inject
+    constructor() : Detector {
+        override val packageNames: Set<String> =
+            setOf(
+                PACKAGE_CHROME,
+                PACKAGE_SAMSUNG_INTERNET,
+            )
 
-    override val packageNames: Set<String> = setOf(
-        PACKAGE_CHROME,
-        PACKAGE_SAMSUNG_INTERNET,
-    )
+        override fun detect(
+            event: AccessibilityEvent,
+            root: AccessibilityNodeInfo?,
+        ): Detection {
+            val pkg = event.packageName?.toString() ?: return Detection.NotInteresting
 
-    override fun detect(event: AccessibilityEvent, root: AccessibilityNodeInfo?): Detection {
-        val pkg = event.packageName?.toString() ?: return Detection.NotInteresting
+            val (surface, viewIds) =
+                when (pkg) {
+                    PACKAGE_CHROME -> SURFACE_CHROME to CHROME_URL_BAR_IDS
+                    PACKAGE_SAMSUNG_INTERNET -> SURFACE_SAMSUNG_INTERNET to SAMSUNG_INTERNET_URL_BAR_IDS
+                    else -> return Detection.NotInteresting
+                }
 
-        val (surface, viewIds) = when (pkg) {
-            PACKAGE_CHROME -> SURFACE_CHROME to CHROME_URL_BAR_IDS
-            PACKAGE_SAMSUNG_INTERNET -> SURFACE_SAMSUNG_INTERNET to SAMSUNG_INTERNET_URL_BAR_IDS
-            else -> return Detection.NotInteresting
-        }
+            val rootNode = root ?: return Detection.NotInteresting
+            val url = rootNode.findUrlBarText(viewIds) ?: return Detection.NotInteresting
 
-        val rootNode = root ?: return Detection.NotInteresting
-        val url = rootNode.findUrlBarText(viewIds) ?: return Detection.NotInteresting
-
-        return if (url.isYouTubeShortsUrl()) {
-            Detection.ShortFormFeed(surface)
-        } else {
-            Detection.NotInteresting
-        }
-    }
-
-    /**
-     * Locate the address-bar node and return its current text. The browsers expose the URL as
-     * the EditText's `text`; on some Samsung builds the visible-text mirror lives in
-     * `contentDescription`, so we try both. Returns `null` if no candidate node exists or every
-     * candidate is empty — that's the normal "user is on a chrome surface but not focused on a
-     * tab" case (e.g., the tab switcher).
-     */
-    private fun AccessibilityNodeInfo.findUrlBarText(viewIds: Array<String>): String? {
-        for (viewId in viewIds) {
-            val matches = findAccessibilityNodeInfosByViewId(viewId) ?: continue
-            for (node in matches) {
-                if (node == null) continue
-                val text = node.text?.toString()?.takeIf { it.isNotBlank() }
-                    ?: node.contentDescription?.toString()?.takeIf { it.isNotBlank() }
-                if (text != null) return text
+            return if (url.isYouTubeShortsUrl()) {
+                Detection.ShortFormFeed(surface)
+            } else {
+                Detection.NotInteresting
             }
         }
-        return null
-    }
-
-    /**
-     * Match `youtube.com/shorts/` under any host prefix we've seen browsers render in the bar:
-     * the bare apex, the mobile subdomain, and `www`. Comparison is case-insensitive because
-     * Chrome occasionally normalises the host case in the displayed string. We deliberately do
-     * **not** match `youtu.be/...` — that short-link host serves regular videos, not Shorts.
-     */
-    private fun String.isYouTubeShortsUrl(): Boolean {
-        val lower = lowercase()
-        return SHORTS_URL_NEEDLES.any { lower.contains(it) }
-    }
-
-    companion object {
-        /** Google Chrome stable channel. */
-        const val PACKAGE_CHROME: String = "com.android.chrome"
-
-        /** Samsung Internet stable channel. */
-        const val PACKAGE_SAMSUNG_INTERNET: String = "com.sec.android.app.sbrowser"
-
-        /** Surface ID emitted when YouTube Shorts is detected inside Chrome. */
-        const val SURFACE_CHROME: String = "chrome-youtube-shorts"
-
-        /** Surface ID emitted when YouTube Shorts is detected inside Samsung Internet. */
-        const val SURFACE_SAMSUNG_INTERNET: String = "samsung-internet-youtube-shorts"
 
         /**
-         * Chrome's address-bar EditText IDs in priority order. `url_bar` is the long-standing
-         * canonical ID; additional IDs can be appended here if a future Chrome release renames it.
+         * Locate the address-bar node and return its current text. The browsers expose the URL as
+         * the EditText's `text`; on some Samsung builds the visible-text mirror lives in
+         * `contentDescription`, so we try both. Returns `null` if no candidate node exists or every
+         * candidate is empty — that's the normal "user is on a chrome surface but not focused on a
+         * tab" case (e.g., the tab switcher).
          */
-        @JvmStatic
-        internal val CHROME_URL_BAR_IDS: Array<String> = arrayOf(
-            "$PACKAGE_CHROME:id/url_bar",
-        )
+        private fun AccessibilityNodeInfo.findUrlBarText(viewIds: Array<String>): String? {
+            for (viewId in viewIds) {
+                val matches = findAccessibilityNodeInfosByViewId(viewId) ?: continue
+                for (node in matches) {
+                    if (node == null) continue
+                    val text =
+                        node.text?.toString()?.takeIf { it.isNotBlank() }
+                            ?: node.contentDescription?.toString()?.takeIf { it.isNotBlank() }
+                    if (text != null) return text
+                }
+            }
+            return null
+        }
 
         /**
-         * Samsung Internet's address-bar EditText IDs in priority order.
-         * `location_bar_edit_text` is the standard ID; if Samsung renames it in a future build,
-         * add the new resource name to this list and keep the old one as a fallback.
+         * Match `youtube.com/shorts/` under any host prefix we've seen browsers render in the bar:
+         * the bare apex, the mobile subdomain, and `www`. Comparison is case-insensitive because
+         * Chrome occasionally normalises the host case in the displayed string. We deliberately do
+         * **not** match `youtu.be/...` — that short-link host serves regular videos, not Shorts.
          */
-        @JvmStatic
-        internal val SAMSUNG_INTERNET_URL_BAR_IDS: Array<String> = arrayOf(
-            "$PACKAGE_SAMSUNG_INTERNET:id/location_bar_edit_text",
-        )
+        private fun String.isYouTubeShortsUrl(): Boolean {
+            val lower = lowercase()
+            return SHORTS_URL_NEEDLES.any { lower.contains(it) }
+        }
 
-        /**
-         * URL substrings that uniquely identify a YouTube Shorts watch page. All entries must
-         * include the trailing `/shorts/` segment so we never match the home page, the dedicated
-         * Shorts feed tab (`/feed/shorts` — which we also catch via the second needle), or
-         * unrelated paths like `/results?search_query=shorts`.
-         */
-        @JvmStatic
-        internal val SHORTS_URL_NEEDLES: Array<String> = arrayOf(
-            "youtube.com/shorts/",
-            "youtube.com/feed/shorts",
-        )
+        companion object {
+            /** Google Chrome stable channel. */
+            const val PACKAGE_CHROME: String = "com.android.chrome"
+
+            /** Samsung Internet stable channel. */
+            const val PACKAGE_SAMSUNG_INTERNET: String = "com.sec.android.app.sbrowser"
+
+            /** Surface ID emitted when YouTube Shorts is detected inside Chrome. */
+            const val SURFACE_CHROME: String = "chrome-youtube-shorts"
+
+            /** Surface ID emitted when YouTube Shorts is detected inside Samsung Internet. */
+            const val SURFACE_SAMSUNG_INTERNET: String = "samsung-internet-youtube-shorts"
+
+            /**
+             * Chrome's address-bar EditText IDs in priority order. `url_bar` is the long-standing
+             * canonical ID; additional IDs can be appended here if a future Chrome release renames it.
+             */
+            @JvmStatic
+            internal val CHROME_URL_BAR_IDS: Array<String> =
+                arrayOf(
+                    "$PACKAGE_CHROME:id/url_bar",
+                )
+
+            /**
+             * Samsung Internet's address-bar EditText IDs in priority order.
+             * `location_bar_edit_text` is the standard ID; if Samsung renames it in a future build,
+             * add the new resource name to this list and keep the old one as a fallback.
+             */
+            @JvmStatic
+            internal val SAMSUNG_INTERNET_URL_BAR_IDS: Array<String> =
+                arrayOf(
+                    "$PACKAGE_SAMSUNG_INTERNET:id/location_bar_edit_text",
+                )
+
+            /**
+             * URL substrings that uniquely identify a YouTube Shorts watch page. All entries must
+             * include the trailing `/shorts/` segment so we never match the home page, the dedicated
+             * Shorts feed tab (`/feed/shorts` — which we also catch via the second needle), or
+             * unrelated paths like `/results?search_query=shorts`.
+             */
+            @JvmStatic
+            internal val SHORTS_URL_NEEDLES: Array<String> =
+                arrayOf(
+                    "youtube.com/shorts/",
+                    "youtube.com/feed/shorts",
+                )
+        }
     }
-}

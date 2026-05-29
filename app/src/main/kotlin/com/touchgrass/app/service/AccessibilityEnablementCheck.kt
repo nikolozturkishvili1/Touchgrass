@@ -16,18 +16,27 @@ import javax.inject.Singleton
  * colon-separated list of `ComponentName` strings of currently-enabled services.
  */
 @Singleton
-class AccessibilityEnablementCheck @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
-    fun isEnabled(): Boolean {
-        val enabled = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
-        ).orEmpty()
-        if (enabled.isEmpty()) return false
+class AccessibilityEnablementCheck
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        fun isEnabled(): Boolean {
+            val enabled =
+                Settings.Secure
+                    .getString(
+                        context.contentResolver,
+                        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                    ).orEmpty()
+            if (enabled.isEmpty()) return false
 
-        val ourComponentSuffix = "/${TouchgrassAccessibilityService::class.java.name}"
-        return enabled.split(':')
-            .any { it.endsWith(ourComponentSuffix) || it.contains(context.packageName) && it.endsWith(ourComponentSuffix) }
+            val ourComponentSuffix = "/${TouchgrassAccessibilityService::class.java.name}"
+            return enabled
+                .split(':')
+                .any {
+                    it.endsWith(ourComponentSuffix) ||
+                        it.contains(context.packageName) &&
+                        it.endsWith(ourComponentSuffix)
+                }
+        }
     }
-}

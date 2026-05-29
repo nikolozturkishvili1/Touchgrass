@@ -27,14 +27,11 @@ import dagger.multibindings.IntoSet
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AccessibilityModule {
-
     @Binds
     abstract fun bindBlockingStrategy(impl: BackPressBlockingStrategy): BlockingStrategy
 
     @Binds
-    abstract fun bindHeartbeat(
-        impl: com.touchgrass.app.data.local.DataStoreHeartbeat,
-    ): Heartbeat
+    abstract fun bindHeartbeat(impl: com.touchgrass.app.data.local.DataStoreHeartbeat): Heartbeat
 
     @Binds @IntoSet
     abstract fun bindYouTubeShortsDetector(detector: YouTubeShortsDetector): Detector

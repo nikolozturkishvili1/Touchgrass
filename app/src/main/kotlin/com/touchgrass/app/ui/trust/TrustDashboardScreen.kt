@@ -56,20 +56,22 @@ fun TrustDashboardScreen(
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             )
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -79,8 +81,9 @@ fun TrustDashboardScreen(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Touchgrass blocks short-form feeds entirely on-device. " +
-                    "Here's exactly what that means.",
+                text =
+                    "Touchgrass blocks short-form feeds entirely on-device. " +
+                        "Here's exactly what that means.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -88,44 +91,48 @@ fun TrustDashboardScreen(
 
             Section(
                 title = "What Touchgrass can see",
-                bullets = listOf(
-                    "Which app is in the foreground — only when it's one you put on the block list.",
-                    "Screen elements inside those apps, just long enough to detect a reel or short.",
-                    "The fact that you opened Touchgrass itself.",
-                ),
+                bullets =
+                    listOf(
+                        "Which app is in the foreground — only when it's one you put on the block list.",
+                        "Screen elements inside those apps, just long enough to detect a reel or short.",
+                        "The fact that you opened Touchgrass itself.",
+                    ),
             )
             Spacer(Modifier.height(16.dp))
             Section(
                 title = "What Touchgrass cannot see",
-                bullets = listOf(
-                    "Your messages, emails, banking apps, photos, or keyboard input.",
-                    "Any app not on your block list — even though Android could let us, we've " +
-                        "scoped the Accessibility service strictly.",
-                    "Your location, contacts, calendar, microphone, or camera.",
-                ),
+                bullets =
+                    listOf(
+                        "Your messages, emails, banking apps, photos, or keyboard input.",
+                        "Any app not on your block list — even though Android could let us, we've " +
+                            "scoped the Accessibility service strictly.",
+                        "Your location, contacts, calendar, microphone, or camera.",
+                    ),
             )
             Spacer(Modifier.height(16.dp))
             Section(
                 title = "Where your data lives",
-                bullets = listOf(
-                    "On your phone. Nowhere else.",
-                    "Your settings and block counts are stored locally.",
-                    "There's no Touchgrass server that knows you exist.",
-                ),
+                bullets =
+                    listOf(
+                        "On your phone. Nowhere else.",
+                        "Your settings and block counts are stored locally.",
+                        "There's no Touchgrass server that knows you exist.",
+                    ),
             )
             Spacer(Modifier.height(16.dp))
             Section(
                 title = "When Touchgrass uses the internet",
-                bullets = listOf(
-                    "Commitment lock: when you enroll or verify, we send a 6-digit code to your " +
-                        "email via Resend (resend.com). Resend sees the recipient address and the " +
-                        "email body (which contains the OTP). Nothing else.",
-                    "Your email is stored on your phone only. There's no copy on our side.",
-                    "Play Billing handles any purchases. We never see your payment info. " +
-                        "(V1 is free — no IAP at launch.)",
-                    "That's it. No analytics, no tracking SDKs, no crash reporter without an " +
-                        "explicit opt-in disclosed right here.",
-                ),
+                bullets =
+                    listOf(
+                        "Commitment lock: when you enroll or verify, we send a 6-digit code to your " +
+                            "email via Resend (resend.com). Resend sees the recipient address and the " +
+                            "email body (which contains the OTP). Nothing else.",
+                        "Your email is stored on your phone only. There's no copy on our side.",
+                        "Play Billing handles any purchases. We never see your payment info. " +
+                            "(V1 is free — no IAP at launch.)",
+                        "That's it. No analytics, no tracking SDKs, no crash reporter without an " +
+                            "explicit opt-in disclosed right here.",
+                    ),
             )
             Spacer(Modifier.height(24.dp))
 
@@ -144,7 +151,10 @@ fun TrustDashboardScreen(
 }
 
 @Composable
-private fun Section(title: String, bullets: List<String>) {
+private fun Section(
+    title: String,
+    bullets: List<String>,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -169,12 +179,15 @@ private fun Section(title: String, bullets: List<String>) {
     }
 }
 
-private fun openUrl(context: android.content.Context, url: String) {
+private fun openUrl(
+    context: android.content.Context,
+    url: String,
+) {
     try {
         context.startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
         )
-    } catch (e: Exception) {
+    } catch (e: android.content.ActivityNotFoundException) {
         Timber.w(e, "could not open url %s", url)
     }
 }

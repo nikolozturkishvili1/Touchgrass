@@ -24,47 +24,49 @@ import javax.inject.Singleton
  * per session".
  */
 @Singleton
-class QuickPeekManager @Inject constructor(
-    pauseRepository: PauseRepository,
-    @ApplicationScope appScope: CoroutineScope,
-) {
-    @Volatile
-    private var quickPeekEnabled: Boolean = false
+class QuickPeekManager
+    @Inject
+    constructor(
+        pauseRepository: PauseRepository,
+        @ApplicationScope appScope: CoroutineScope,
+    ) {
+        @Volatile
+        private var quickPeekEnabled: Boolean = false
 
-    private val peekConsumed = ConcurrentHashMap<String, Boolean>()
+        private val peekConsumed = ConcurrentHashMap<String, Boolean>()
 
-    @Volatile
-    private var lastObservedPackage: String? = null
+        @Volatile
+        private var lastObservedPackage: String? = null
 
-    init {
-        appScope.launch {
-            pauseRepository.quickPeekEnabledFlow.collect { enabled ->
-                quickPeekEnabled = enabled
-                // Turning Quick Peek off wipes any pending session — turning it back on later
-                // shouldn't accidentally honor a stale "I already used my peek" flag.
-                if (!enabled) peekConsumed.clear()
+        init {
+            appScope.launch {
+                pauseRepository.quickPeekEnabledFlow.collect { enabled ->
+                    quickPeekEnabled = enabled
+                    // Turning Quick Peek off wipes any pending session — turning it back on later
+                    // shouldn't accidentally honor a stale "I already used my peek" flag.
+                    if (!enabled) peekConsumed.clear()
+                }
             }
         }
-    }
 
-    /**
-     * If Quick Peek is enabled and the user hasn't yet consumed a peek for [packageName] this
-     * session, grant the peek and return `true` (caller skips the block). Otherwise return `false`.
-     *
-     * Also performs the session-reset bookkeeping: when the observed package changes, peek
-     * consumption for the prior package is cleared.
-     */
-    fun checkAndConsumeQuickPeek(packageName: String): Boolean {
-        val previous = lastObservedPackage
-        if (previous != null && previous != packageName) {
-            peekConsumed.remove(previous)
+        /**
+         * If Quick Peek is enabled and the user hasn't yet consumed a peek for [packageName] this
+         * session, grant the peek and return `true` (caller skips the block). Otherwise return `false`.
+         *
+         * Also performs the session-reset bookkeeping: when the observed package changes, peek
+         * consumption for the prior package is cleared.
+         */
+        fun checkAndConsumeQuickPeek(packageName: String): Boolean {
+            val previous = lastObservedPackage
+            if (previous != null && previous != packageName) {
+                peekConsumed.remove(previous)
+            }
+            lastObservedPackage = packageName
+
+            if (!quickPeekEnabled) return false
+            if (peekConsumed[packageName] == true) return false
+
+            peekConsumed[packageName] = true
+            return true
         }
-        lastObservedPackage = packageName
-
-        if (!quickPeekEnabled) return false
-        if (peekConsumed[packageName] == true) return false
-
-        peekConsumed[packageName] = true
-        return true
     }
-}

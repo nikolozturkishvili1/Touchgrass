@@ -21,30 +21,33 @@ import javax.inject.Singleton
  * minutes is fine.
  */
 @Singleton
-class WatchdogScheduler @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
-    fun scheduleIfNotScheduled() {
-        val request = PeriodicWorkRequestBuilder<WatchdogWorker>(
-            repeatInterval = WATCHDOG_INTERVAL_MINUTES,
-            repeatIntervalTimeUnit = TimeUnit.MINUTES,
-        ).build()
+class WatchdogScheduler
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        fun scheduleIfNotScheduled() {
+            val request =
+                PeriodicWorkRequestBuilder<WatchdogWorker>(
+                    repeatInterval = WATCHDOG_INTERVAL_MINUTES,
+                    repeatIntervalTimeUnit = TimeUnit.MINUTES,
+                ).build()
 
-        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-            UNIQUE_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
-            request,
-        )
-        Timber.i("watchdog scheduled every %d minutes", WATCHDOG_INTERVAL_MINUTES)
-    }
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                UNIQUE_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                request,
+            )
+            Timber.i("watchdog scheduled every %d minutes", WATCHDOG_INTERVAL_MINUTES)
+        }
 
-    fun cancel() {
-        WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_NAME)
-        Timber.i("watchdog cancelled")
-    }
+        fun cancel() {
+            WorkManager.getInstance(context).cancelUniqueWork(UNIQUE_NAME)
+            Timber.i("watchdog cancelled")
+        }
 
-    companion object {
-        const val UNIQUE_NAME: String = "touchgrass-watchdog"
-        const val WATCHDOG_INTERVAL_MINUTES: Long = 15L
+        companion object {
+            const val UNIQUE_NAME: String = "touchgrass-watchdog"
+            const val WATCHDOG_INTERVAL_MINUTES: Long = 15L
+        }
     }
-}

@@ -25,75 +25,76 @@ import javax.inject.Inject
  * service, then sets `finished = true` which the nav layer observes to navigate home.
  */
 @HiltViewModel
-class OnboardingViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository,
-    private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
-    private val oemDetector: OemDetector,
-    private val oemRepository: OemRepository,
-    private val serviceLauncher: ServiceLauncher,
-) : ViewModel() {
+class OnboardingViewModel
+    @Inject
+    constructor(
+        private val preferencesRepository: PreferencesRepository,
+        private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
+        private val oemDetector: OemDetector,
+        private val oemRepository: OemRepository,
+        private val serviceLauncher: ServiceLauncher,
+    ) : ViewModel() {
+        private val _state = MutableStateFlow(OnboardingState())
+        val state: StateFlow<OnboardingState> = _state.asStateFlow()
 
-    private val _state = MutableStateFlow(OnboardingState())
-    val state: StateFlow<OnboardingState> = _state.asStateFlow()
-
-    init {
-        loadOemWalkthrough()
-        refreshAccessibilityStatus()
-    }
-
-    private fun loadOemWalkthrough() {
-        val oemId = oemDetector.detect()
-        _state.update { it.copy(oemId = oemId) }
-        viewModelScope.launch {
-            val walkthrough = oemRepository.walkthroughFor(oemId)
-            _state.update { it.copy(walkthrough = walkthrough) }
+        init {
+            loadOemWalkthrough()
+            refreshAccessibilityStatus()
         }
-    }
 
-    /** Re-check the OS-level Accessibility toggle. Call from `LifecycleResumeEffect`. */
-    fun refreshAccessibilityStatus() {
-        _state.update { it.copy(accessibilityEnabled = accessibilityEnablementCheck.isEnabled()) }
-    }
-
-    fun setNotificationsPermissionGranted(granted: Boolean) {
-        _state.update { it.copy(notificationsPermissionGranted = granted) }
-    }
-
-    fun advance() {
-        _state.value.currentStep.next()?.let { next ->
-            _state.update { it.copy(currentStep = next) }
-        }
-    }
-
-    fun retreat() {
-        _state.value.currentStep.previous()?.let { previous ->
-            _state.update { it.copy(currentStep = previous) }
-        }
-    }
-
-    fun togglePackages(packageNames: Set<String>) {
-        if (packageNames.isEmpty()) return
-        _state.update { current ->
-            val toggled = current.selectedPackages.toMutableSet()
-            if (toggled.containsAll(packageNames)) {
-                toggled.removeAll(packageNames)
-            } else {
-                toggled.addAll(packageNames)
+        private fun loadOemWalkthrough() {
+            val oemId = oemDetector.detect()
+            _state.update { it.copy(oemId = oemId) }
+            viewModelScope.launch {
+                val walkthrough = oemRepository.walkthroughFor(oemId)
+                _state.update { it.copy(walkthrough = walkthrough) }
             }
-            current.copy(selectedPackages = toggled)
         }
-    }
 
-    fun finish() {
-        if (_state.value.finishing || _state.value.finished) return
-        _state.update { it.copy(finishing = true) }
-        viewModelScope.launch {
-            runCatching {
-                preferencesRepository.setEnabledPackages(_state.value.selectedPackages)
-                preferencesRepository.setOnboardingComplete(true)
-                serviceLauncher.start()
-            }.onFailure { Timber.e(it, "onboarding finish failed") }
-            _state.update { it.copy(finished = true, finishing = false) }
+        /** Re-check the OS-level Accessibility toggle. Call from `LifecycleResumeEffect`. */
+        fun refreshAccessibilityStatus() {
+            _state.update { it.copy(accessibilityEnabled = accessibilityEnablementCheck.isEnabled()) }
+        }
+
+        fun setNotificationsPermissionGranted(granted: Boolean) {
+            _state.update { it.copy(notificationsPermissionGranted = granted) }
+        }
+
+        fun advance() {
+            _state.value.currentStep.next()?.let { next ->
+                _state.update { it.copy(currentStep = next) }
+            }
+        }
+
+        fun retreat() {
+            _state.value.currentStep.previous()?.let { previous ->
+                _state.update { it.copy(currentStep = previous) }
+            }
+        }
+
+        fun togglePackages(packageNames: Set<String>) {
+            if (packageNames.isEmpty()) return
+            _state.update { current ->
+                val toggled = current.selectedPackages.toMutableSet()
+                if (toggled.containsAll(packageNames)) {
+                    toggled.removeAll(packageNames)
+                } else {
+                    toggled.addAll(packageNames)
+                }
+                current.copy(selectedPackages = toggled)
+            }
+        }
+
+        fun finish() {
+            if (_state.value.finishing || _state.value.finished) return
+            _state.update { it.copy(finishing = true) }
+            viewModelScope.launch {
+                runCatching {
+                    preferencesRepository.setEnabledPackages(_state.value.selectedPackages)
+                    preferencesRepository.setOnboardingComplete(true)
+                    serviceLauncher.start()
+                }.onFailure { Timber.e(it, "onboarding finish failed") }
+                _state.update { it.copy(finished = true, finishing = false) }
+            }
         }
     }
-}

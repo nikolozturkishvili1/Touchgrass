@@ -22,5 +22,8 @@ object OtpHasher {
         return bytes.joinToString(separator = "") { byte -> "%02x".format(byte) }
     }
 
-    fun matches(otp: String, hash: String): Boolean = hash(otp) == hash
+    fun matches(
+        otp: String,
+        hash: String,
+    ): Boolean = hash(otp) == hash
 }

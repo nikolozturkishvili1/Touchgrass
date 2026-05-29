@@ -57,19 +57,21 @@ fun SettingsAppPickerScreen(
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             )
         },
     ) { padding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 24.dp),
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -92,9 +94,10 @@ fun SettingsAppPickerScreen(
 private fun SettingsAppPickerAllOnPreview() {
     TouchgrassTheme(darkTheme = false) {
         SettingsAppPickerScreen(
-            state = SettingsAppPickerUiState(
-                selectedPackages = SupportedApp.ALL.flatMap { it.packageNames }.toSet(),
-            ),
+            state =
+                SettingsAppPickerUiState(
+                    selectedPackages = SupportedApp.ALL.flatMap { it.packageNames }.toSet(),
+                ),
             onTogglePackages = {},
             onNavigateBack = {},
         )
@@ -106,9 +109,14 @@ private fun SettingsAppPickerAllOnPreview() {
 private fun SettingsAppPickerHalfOnDarkPreview() {
     TouchgrassTheme(darkTheme = true) {
         SettingsAppPickerScreen(
-            state = SettingsAppPickerUiState(
-                selectedPackages = SupportedApp.ALL.take(3).flatMap { it.packageNames }.toSet(),
-            ),
+            state =
+                SettingsAppPickerUiState(
+                    selectedPackages =
+                        SupportedApp.ALL
+                            .take(3)
+                            .flatMap { it.packageNames }
+                            .toSet(),
+                ),
             onTogglePackages = {},
             onNavigateBack = {},
         )

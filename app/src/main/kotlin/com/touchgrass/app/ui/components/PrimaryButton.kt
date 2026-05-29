@@ -26,13 +26,15 @@ fun PrimaryButton(
     Button(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = MIN_HEIGHT_DP.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-        ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = MIN_HEIGHT_DP.dp),
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            ),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(text = text, style = MaterialTheme.typography.labelLarge)
@@ -50,9 +52,10 @@ fun SecondaryButton(
     OutlinedButton(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = MIN_HEIGHT_DP.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .heightIn(min = MIN_HEIGHT_DP.dp),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(text = text, style = MaterialTheme.typography.labelLarge)

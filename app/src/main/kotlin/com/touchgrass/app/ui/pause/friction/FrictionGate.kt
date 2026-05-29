@@ -22,27 +22,32 @@ fun FrictionGate(
 ) {
     when (mode) {
         FrictionMode.None,
-        FrictionMode.WaitTimer -> WaitTimerFriction(
-            waitSeconds = waitTimerSeconds,
-            onComplete = onComplete,
-            onCancel = onCancel,
-            modifier = modifier,
-        )
-        FrictionMode.MathProblem -> MathProblemFriction(
-            onComplete = onComplete,
-            onCancel = onCancel,
-            modifier = modifier,
-        )
-        FrictionMode.RandomCode -> RandomCodeFriction(
-            onComplete = onComplete,
-            onCancel = onCancel,
-            modifier = modifier,
-        )
-        FrictionMode.Breathing -> BreathingFriction(
-            onComplete = onComplete,
-            onCancel = onCancel,
-            modifier = modifier,
-        )
+        FrictionMode.WaitTimer,
+        ->
+            WaitTimerFriction(
+                waitSeconds = waitTimerSeconds,
+                onComplete = onComplete,
+                onCancel = onCancel,
+                modifier = modifier,
+            )
+        FrictionMode.MathProblem ->
+            MathProblemFriction(
+                onComplete = onComplete,
+                onCancel = onCancel,
+                modifier = modifier,
+            )
+        FrictionMode.RandomCode ->
+            RandomCodeFriction(
+                onComplete = onComplete,
+                onCancel = onCancel,
+                modifier = modifier,
+            )
+        FrictionMode.Breathing ->
+            BreathingFriction(
+                onComplete = onComplete,
+                onCancel = onCancel,
+                modifier = modifier,
+            )
     }
 }
 

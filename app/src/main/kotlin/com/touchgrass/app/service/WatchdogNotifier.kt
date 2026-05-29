@@ -20,43 +20,51 @@ import javax.inject.Singleton
  * flow is responsible for requesting it.
  */
 @Singleton
-class WatchdogNotifier @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
-    fun notifyUnhealthy(reason: WatchdogHealth) {
-        val openAppIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+class WatchdogNotifier
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        // `reason` is accepted for API symmetry and future per-reason copy; not surfaced yet.
+        @Suppress("UnusedParameter")
+        fun notifyUnhealthy(reason: WatchdogHealth) {
+            val openAppIntent =
+                Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                }
+            val pendingIntent =
+                PendingIntent.getActivity(
+                    context,
+                    REQUEST_OPEN_APP,
+                    openAppIntent,
+                    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+                )
+
+            val notification =
+                NotificationCompat
+                    .Builder(context, NotificationChannels.WATCHDOG_ID)
+                    .setSmallIcon(R.drawable.ic_notification_touchgrass)
+                    .setContentTitle(context.getString(R.string.watchdog_notification_title))
+                    .setContentText(context.getString(R.string.watchdog_notification_text))
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setCategory(NotificationCompat.CATEGORY_ERROR)
+                    .build()
+
+            runCatching {
+                NotificationManagerCompat.from(context).notify(WATCHDOG_NOTIFICATION_ID, notification)
+            }.onFailure {
+                Timber.w(it, "watchdog notify failed (likely POST_NOTIFICATIONS not granted)")
+            }
         }
-        val pendingIntent = PendingIntent.getActivity(
-            context,
-            REQUEST_OPEN_APP,
-            openAppIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
 
-        val notification = NotificationCompat.Builder(context, NotificationChannels.WATCHDOG_ID)
-            .setSmallIcon(R.drawable.ic_notification_touchgrass)
-            .setContentTitle(context.getString(R.string.watchdog_notification_title))
-            .setContentText(context.getString(R.string.watchdog_notification_text))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-            .setCategory(NotificationCompat.CATEGORY_ERROR)
-            .build()
+        fun clear() {
+            NotificationManagerCompat.from(context).cancel(WATCHDOG_NOTIFICATION_ID)
+        }
 
-        runCatching {
-            NotificationManagerCompat.from(context).notify(WATCHDOG_NOTIFICATION_ID, notification)
-        }.onFailure {
-            Timber.w(it, "watchdog notify failed (likely POST_NOTIFICATIONS not granted)")
+        companion object {
+            const val WATCHDOG_NOTIFICATION_ID: Int = 2001
+            private const val REQUEST_OPEN_APP: Int = 200
         }
     }
-
-    fun clear() {
-        NotificationManagerCompat.from(context).cancel(WATCHDOG_NOTIFICATION_ID)
-    }
-
-    companion object {
-        const val WATCHDOG_NOTIFICATION_ID: Int = 2001
-        private const val REQUEST_OPEN_APP: Int = 200
-    }
-}

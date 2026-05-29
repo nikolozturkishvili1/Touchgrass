@@ -49,150 +49,159 @@ import javax.inject.Singleton
  * Stays well within the [Detector] contract: side-effect-free, no I/O.
  */
 @Singleton
-class TikTokDetector @Inject constructor() : Detector {
+class TikTokDetector
+    @Inject
+    constructor() : Detector {
+        override val packageNames: Set<String> = setOf(PACKAGE_MUSICALLY, PACKAGE_TRILL)
 
-    override val packageNames: Set<String> = setOf(PACKAGE_MUSICALLY, PACKAGE_TRILL)
+        override fun detect(
+            event: AccessibilityEvent,
+            root: AccessibilityNodeInfo?,
+        ): Detection {
+            val pkg = event.packageName?.toString() ?: return Detection.NotInteresting
+            if (pkg !in packageNames) return Detection.NotInteresting
 
-    override fun detect(event: AccessibilityEvent, root: AccessibilityNodeInfo?): Detection {
-        val pkg = event.packageName?.toString() ?: return Detection.NotInteresting
-        if (pkg !in packageNames) return Detection.NotInteresting
+            val rootNode = root ?: return Detection.NotInteresting
 
-        val rootNode = root ?: return Detection.NotInteresting
+            // Step 1: cheap-ish view-id sweep for any known feed container.
+            if (!rootNode.hasFeedContainer(pkg)) return Detection.NotInteresting
 
-        // Step 1: cheap-ish view-id sweep for any known feed container.
-        if (!rootNode.hasFeedContainer(pkg)) return Detection.NotInteresting
+            // Step 2: confirm with the right-rail action cluster. This excludes screens that might
+            // re-use a similarly-named container (rare, but worth the guard).
+            if (!rootNode.hasFeedActionCluster()) return Detection.NotInteresting
 
-        // Step 2: confirm with the right-rail action cluster. This excludes screens that might
-        // re-use a similarly-named container (rare, but worth the guard).
-        if (!rootNode.hasFeedActionCluster()) return Detection.NotInteresting
-
-        // Step 3: pick the surface. Prefer "Following" only if its tab is explicitly selected;
-        // default to For You otherwise.
-        val surface = if (rootNode.followingTabSelected()) SURFACE_FOLLOWING else SURFACE_FOR_YOU
-        return Detection.ShortFormFeed(surface)
-    }
-
-    private fun AccessibilityNodeInfo.hasFeedContainer(pkg: String): Boolean {
-        for (idSuffix in FEED_VIEW_ID_SUFFIXES) {
-            val matches = findAccessibilityNodeInfosByViewId("$pkg:id/$idSuffix")
-            if (!matches.isNullOrEmpty()) return true
+            // Step 3: pick the surface. Prefer "Following" only if its tab is explicitly selected;
+            // default to For You otherwise.
+            val surface = if (rootNode.followingTabSelected()) SURFACE_FOLLOWING else SURFACE_FOR_YOU
+            return Detection.ShortFormFeed(surface)
         }
-        return false
-    }
 
-    private fun AccessibilityNodeInfo.hasFeedActionCluster(): Boolean {
-        var likeSeen = false
-        var commentSeen = false
-        var shareSeen = false
-        walk { node ->
-            val desc = node.contentDescription?.toString()?.lowercase() ?: return@walk
-            if (!likeSeen && LIKE_HINTS.any { desc.contains(it) }) likeSeen = true
-            if (!commentSeen && COMMENT_HINTS.any { desc.contains(it) }) commentSeen = true
-            if (!shareSeen && SHARE_HINTS.any { desc.contains(it) }) shareSeen = true
+        private fun AccessibilityNodeInfo.hasFeedContainer(pkg: String): Boolean {
+            for (idSuffix in FEED_VIEW_ID_SUFFIXES) {
+                val matches = findAccessibilityNodeInfosByViewId("$pkg:id/$idSuffix")
+                if (!matches.isNullOrEmpty()) return true
+            }
+            return false
         }
-        // Require at least two of the three — TikTok occasionally relabels one button per locale
-        // or A/B test, but it's extremely unlikely two of like/comment/share are simultaneously
-        // missing on a real feed screen.
-        val score = (if (likeSeen) 1 else 0) + (if (commentSeen) 1 else 0) + (if (shareSeen) 1 else 0)
-        return score >= MIN_ACTION_CLUSTER_MATCHES
-    }
 
-    private fun AccessibilityNodeInfo.followingTabSelected(): Boolean {
-        var found = false
-        walk { node ->
-            if (found) return@walk
-            val text = node.text?.toString()?.lowercase() ?: return@walk
-            if (FOLLOWING_TAB_LABELS.any { text == it } && node.isSelected) {
-                found = true
+        private fun AccessibilityNodeInfo.hasFeedActionCluster(): Boolean {
+            var likeSeen = false
+            var commentSeen = false
+            var shareSeen = false
+            walk { node ->
+                val desc = node.contentDescription?.toString()?.lowercase() ?: return@walk
+                if (!likeSeen && LIKE_HINTS.any { desc.contains(it) }) likeSeen = true
+                if (!commentSeen && COMMENT_HINTS.any { desc.contains(it) }) commentSeen = true
+                if (!shareSeen && SHARE_HINTS.any { desc.contains(it) }) shareSeen = true
+            }
+            // Require at least two of the three — TikTok occasionally relabels one button per locale
+            // or A/B test, but it's extremely unlikely two of like/comment/share are simultaneously
+            // missing on a real feed screen.
+            val score = (if (likeSeen) 1 else 0) + (if (commentSeen) 1 else 0) + (if (shareSeen) 1 else 0)
+            return score >= MIN_ACTION_CLUSTER_MATCHES
+        }
+
+        private fun AccessibilityNodeInfo.followingTabSelected(): Boolean {
+            var found = false
+            walk { node ->
+                if (found) return@walk
+                val text = node.text?.toString()?.lowercase() ?: return@walk
+                if (FOLLOWING_TAB_LABELS.any { text == it } && node.isSelected) {
+                    found = true
+                }
+            }
+            return found
+        }
+
+        /**
+         * Depth-first walk over the node tree, applying [visit] to each node. Bounded by
+         * [MAX_NODES_WALKED] so a pathological tree can't hang us — TikTok's feed cells are
+         * deep but well under this ceiling in practice.
+         */
+        private inline fun AccessibilityNodeInfo.walk(visit: (AccessibilityNodeInfo) -> Unit) {
+            val stack = ArrayDeque<AccessibilityNodeInfo>()
+            stack.addLast(this)
+            var visited = 0
+            while (stack.isNotEmpty() && visited < MAX_NODES_WALKED) {
+                val node = stack.removeLast()
+                visit(node)
+                visited++
+                for (i in 0 until node.childCount) {
+                    val child = node.getChild(i) ?: continue
+                    stack.addLast(child)
+                }
             }
         }
-        return found
-    }
 
-    /**
-     * Depth-first walk over the node tree, applying [visit] to each node. Bounded by
-     * [MAX_NODES_WALKED] so a pathological tree can't hang us — TikTok's feed cells are
-     * deep but well under this ceiling in practice.
-     */
-    private inline fun AccessibilityNodeInfo.walk(visit: (AccessibilityNodeInfo) -> Unit) {
-        val stack = ArrayDeque<AccessibilityNodeInfo>()
-        stack.addLast(this)
-        var visited = 0
-        while (stack.isNotEmpty() && visited < MAX_NODES_WALKED) {
-            val node = stack.removeLast()
-            visit(node)
-            visited++
-            for (i in 0 until node.childCount) {
-                val child = node.getChild(i) ?: continue
-                stack.addLast(child)
-            }
+        companion object {
+            /** Rest-of-world TikTok build (canonical, used for logging). */
+            const val PACKAGE_MUSICALLY: String = "com.zhiliaoapp.musically"
+
+            /** East/Southeast Asia TikTok build — same UI, same detector. */
+            const val PACKAGE_TRILL: String = "com.ss.android.ugc.trill"
+
+            /** Stable surface identifier for the For You feed. */
+            const val SURFACE_FOR_YOU: String = "tiktok-foryou"
+
+            /** Stable surface identifier for the Following feed. */
+            const val SURFACE_FOLLOWING: String = "tiktok-following"
+
+            /**
+             * View ID suffixes (the part after `<pkg>:id/`) observed on the TikTok feed across recent
+             * builds. The list is intentionally broad because TikTok rotates these — update it when
+             * a release breaks detection. Each candidate is tried against BOTH package names.
+             */
+            @JvmStatic
+            internal val FEED_VIEW_ID_SUFFIXES: Array<String> =
+                arrayOf(
+                    "feed_layout",
+                    "feed_recycler_view",
+                    "video_play_recycler",
+                    "main_tab_feed",
+                    "vertical_view_pager",
+                    "video_container",
+                )
+
+            /**
+             * Content-description substrings that identify the right-rail "Like" affordance.
+             * Lowercased before matching. Multi-locale hints kept short to limit false positives.
+             */
+            @JvmStatic
+            internal val LIKE_HINTS: Array<String> =
+                arrayOf(
+                    "like",
+                    "likes",
+                )
+
+            /** Content-description substrings that identify the right-rail "Comment" affordance. */
+            @JvmStatic
+            internal val COMMENT_HINTS: Array<String> =
+                arrayOf(
+                    "comment",
+                    "comments",
+                )
+
+            /** Content-description substrings that identify the right-rail "Share" affordance. */
+            @JvmStatic
+            internal val SHARE_HINTS: Array<String> =
+                arrayOf(
+                    "share",
+                )
+
+            /**
+             * Top-tab labels for the Following feed. Lowercased before matching. Add localized
+             * variants here if a market starts reporting false-negatives.
+             */
+            @JvmStatic
+            internal val FOLLOWING_TAB_LABELS: Array<String> =
+                arrayOf(
+                    "following",
+                )
+
+            /** Minimum number of like/comment/share buttons that must match to confirm a feed. */
+            internal const val MIN_ACTION_CLUSTER_MATCHES: Int = 2
+
+            /** Safety bound on the node-tree walk. TikTok cells are deep but nowhere near this. */
+            internal const val MAX_NODES_WALKED: Int = 2_000
         }
     }
-
-    companion object {
-        /** Rest-of-world TikTok build (canonical, used for logging). */
-        const val PACKAGE_MUSICALLY: String = "com.zhiliaoapp.musically"
-
-        /** East/Southeast Asia TikTok build — same UI, same detector. */
-        const val PACKAGE_TRILL: String = "com.ss.android.ugc.trill"
-
-        /** Stable surface identifier for the For You feed. */
-        const val SURFACE_FOR_YOU: String = "tiktok-foryou"
-
-        /** Stable surface identifier for the Following feed. */
-        const val SURFACE_FOLLOWING: String = "tiktok-following"
-
-        /**
-         * View ID suffixes (the part after `<pkg>:id/`) observed on the TikTok feed across recent
-         * builds. The list is intentionally broad because TikTok rotates these — update it when
-         * a release breaks detection. Each candidate is tried against BOTH package names.
-         */
-        @JvmStatic
-        internal val FEED_VIEW_ID_SUFFIXES: Array<String> = arrayOf(
-            "feed_layout",
-            "feed_recycler_view",
-            "video_play_recycler",
-            "main_tab_feed",
-            "vertical_view_pager",
-            "video_container",
-        )
-
-        /**
-         * Content-description substrings that identify the right-rail "Like" affordance.
-         * Lowercased before matching. Multi-locale hints kept short to limit false positives.
-         */
-        @JvmStatic
-        internal val LIKE_HINTS: Array<String> = arrayOf(
-            "like",
-            "likes",
-        )
-
-        /** Content-description substrings that identify the right-rail "Comment" affordance. */
-        @JvmStatic
-        internal val COMMENT_HINTS: Array<String> = arrayOf(
-            "comment",
-            "comments",
-        )
-
-        /** Content-description substrings that identify the right-rail "Share" affordance. */
-        @JvmStatic
-        internal val SHARE_HINTS: Array<String> = arrayOf(
-            "share",
-        )
-
-        /**
-         * Top-tab labels for the Following feed. Lowercased before matching. Add localized
-         * variants here if a market starts reporting false-negatives.
-         */
-        @JvmStatic
-        internal val FOLLOWING_TAB_LABELS: Array<String> = arrayOf(
-            "following",
-        )
-
-        /** Minimum number of like/comment/share buttons that must match to confirm a feed. */
-        internal const val MIN_ACTION_CLUSTER_MATCHES: Int = 2
-
-        /** Safety bound on the node-tree walk. TikTok cells are deep but nowhere near this. */
-        internal const val MAX_NODES_WALKED: Int = 2_000
-    }
-}

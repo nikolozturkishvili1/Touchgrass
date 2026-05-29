@@ -37,7 +37,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class TouchgrassForegroundService : Service() {
-
     @Inject lateinit var pauseManager: PauseManager
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -65,14 +64,19 @@ class TouchgrassForegroundService : Service() {
             pauseManager.pausedUntilMs.collect { pauseEndsAtMs ->
                 val updated = buildNotification(pauseEndsAtMs)
                 runCatching {
-                    NotificationManagerCompat.from(this@TouchgrassForegroundService)
+                    NotificationManagerCompat
+                        .from(this@TouchgrassForegroundService)
                         .notify(NOTIFICATION_ID, updated)
                 }.onFailure { Timber.w(it, "failed to update foreground notification") }
             }
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(
+        intent: Intent?,
+        flags: Int,
+        startId: Int,
+    ): Int {
         // START_STICKY asks the OS to recreate us if it kills the process. Part of the
         // belt-and-braces reliability strategy.
         return START_STICKY
@@ -89,22 +93,26 @@ class TouchgrassForegroundService : Service() {
     private fun buildNotification(pauseEndsAtMs: Long): Notification {
         val isPaused = pauseEndsAtMs > System.currentTimeMillis()
 
-        val openAppIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            this,
-            REQUEST_OPEN_APP,
-            openAppIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-        )
+        val openAppIntent =
+            Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+        val pendingIntent =
+            PendingIntent.getActivity(
+                this,
+                REQUEST_OPEN_APP,
+                openAppIntent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            )
 
-        val builder = NotificationCompat.Builder(this, NotificationChannels.FOREGROUND_ID)
-            .setSmallIcon(R.drawable.ic_notification_touchgrass)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setOngoing(true)
-            .setContentIntent(pendingIntent)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+        val builder =
+            NotificationCompat
+                .Builder(this, NotificationChannels.FOREGROUND_ID)
+                .setSmallIcon(R.drawable.ic_notification_touchgrass)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
+                .setContentIntent(pendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
 
         if (isPaused) {
             builder

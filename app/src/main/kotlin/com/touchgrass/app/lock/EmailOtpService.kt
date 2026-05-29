@@ -9,5 +9,8 @@ package com.touchgrass.app.lock
  * `BuildConfig`. See [LockModule] and `app/build.gradle.kts`.
  */
 interface EmailOtpService {
-    suspend fun sendOtp(email: String, code: String): Result<Unit>
+    suspend fun sendOtp(
+        email: String,
+        code: String,
+    ): Result<Unit>
 }

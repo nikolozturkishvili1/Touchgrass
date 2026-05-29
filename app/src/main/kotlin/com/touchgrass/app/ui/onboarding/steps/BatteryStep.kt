@@ -47,9 +47,10 @@ fun BatteryStep(
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Keep Touchgrass awake.",
@@ -58,15 +59,16 @@ fun BatteryStep(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = if (walkthrough != null) {
-                    "Your ${walkthrough.displayName} phone tries hard to save battery by killing " +
-                        "background apps. Touchgrass needs to stay running to do its job. Here's " +
-                        "how to tell your phone to leave it alone."
-                } else {
-                    "Android sometimes kills background apps to save battery. Touchgrass needs " +
-                        "to stay awake. The good news: on your phone, the default settings are " +
-                        "usually fine. Tap the button below to confirm."
-                },
+                text =
+                    if (walkthrough != null) {
+                        "Your ${walkthrough.displayName} phone tries hard to save battery by killing " +
+                            "background apps. Touchgrass needs to stay running to do its job. Here's " +
+                            "how to tell your phone to leave it alone."
+                    } else {
+                        "Android sometimes kills background apps to save battery. Touchgrass needs " +
+                            "to stay awake. The good news: on your phone, the default settings are " +
+                            "usually fine. Tap the button below to confirm."
+                    },
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -103,13 +105,16 @@ private fun openBatterySettings(
     context: android.content.Context,
     deepLinkAction: String?,
 ) {
-    val intents = buildList {
-        if (!deepLinkAction.isNullOrBlank()) add(Intent(deepLinkAction))
-        add(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
-        add(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = android.net.Uri.fromParts("package", context.packageName, null)
-        })
-    }
+    val intents =
+        buildList {
+            if (!deepLinkAction.isNullOrBlank()) add(Intent(deepLinkAction))
+            add(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            add(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = android.net.Uri.fromParts("package", context.packageName, null)
+                },
+            )
+        }
     for (intent in intents) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
@@ -123,7 +128,11 @@ private fun openBatterySettings(
 }
 
 @Composable
-private fun StepCard(stepNumber: Int, title: String, description: String) {
+private fun StepCard(
+    stepNumber: Int,
+    title: String,
+    description: String,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),

@@ -26,34 +26,36 @@ fun TouchgrassTheme(
     )
 }
 
-private val LightColors = lightColorScheme(
-    primary = TouchgrassPalette.Primary,
-    onPrimary = TouchgrassPalette.BackgroundLight,
-    primaryContainer = TouchgrassPalette.Accent,
-    onPrimaryContainer = TouchgrassPalette.TextPrimaryLight,
-    secondary = TouchgrassPalette.Accent,
-    onSecondary = TouchgrassPalette.TextPrimaryLight,
-    background = TouchgrassPalette.BackgroundLight,
-    onBackground = TouchgrassPalette.TextPrimaryLight,
-    surface = TouchgrassPalette.SurfaceLight,
-    onSurface = TouchgrassPalette.TextPrimaryLight,
-    onSurfaceVariant = TouchgrassPalette.TextSecondary,
-    error = TouchgrassPalette.Danger,
-    onError = TouchgrassPalette.BackgroundLight,
-)
+private val LightColors =
+    lightColorScheme(
+        primary = TouchgrassPalette.Primary,
+        onPrimary = TouchgrassPalette.BackgroundLight,
+        primaryContainer = TouchgrassPalette.Accent,
+        onPrimaryContainer = TouchgrassPalette.TextPrimaryLight,
+        secondary = TouchgrassPalette.Accent,
+        onSecondary = TouchgrassPalette.TextPrimaryLight,
+        background = TouchgrassPalette.BackgroundLight,
+        onBackground = TouchgrassPalette.TextPrimaryLight,
+        surface = TouchgrassPalette.SurfaceLight,
+        onSurface = TouchgrassPalette.TextPrimaryLight,
+        onSurfaceVariant = TouchgrassPalette.TextSecondary,
+        error = TouchgrassPalette.Danger,
+        onError = TouchgrassPalette.BackgroundLight,
+    )
 
-private val DarkColors = darkColorScheme(
-    primary = TouchgrassPalette.Accent,
-    onPrimary = TouchgrassPalette.BackgroundDark,
-    primaryContainer = TouchgrassPalette.Primary,
-    onPrimaryContainer = TouchgrassPalette.TextPrimaryDark,
-    secondary = TouchgrassPalette.Accent,
-    onSecondary = TouchgrassPalette.BackgroundDark,
-    background = TouchgrassPalette.BackgroundDark,
-    onBackground = TouchgrassPalette.TextPrimaryDark,
-    surface = TouchgrassPalette.SurfaceDark,
-    onSurface = TouchgrassPalette.TextPrimaryDark,
-    onSurfaceVariant = TouchgrassPalette.TextSecondary,
-    error = TouchgrassPalette.Danger,
-    onError = TouchgrassPalette.BackgroundDark,
-)
+private val DarkColors =
+    darkColorScheme(
+        primary = TouchgrassPalette.Accent,
+        onPrimary = TouchgrassPalette.BackgroundDark,
+        primaryContainer = TouchgrassPalette.Primary,
+        onPrimaryContainer = TouchgrassPalette.TextPrimaryDark,
+        secondary = TouchgrassPalette.Accent,
+        onSecondary = TouchgrassPalette.BackgroundDark,
+        background = TouchgrassPalette.BackgroundDark,
+        onBackground = TouchgrassPalette.TextPrimaryDark,
+        surface = TouchgrassPalette.SurfaceDark,
+        onSurface = TouchgrassPalette.TextPrimaryDark,
+        onSurfaceVariant = TouchgrassPalette.TextSecondary,
+        error = TouchgrassPalette.Danger,
+        onError = TouchgrassPalette.BackgroundDark,
+    )

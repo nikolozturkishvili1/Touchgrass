@@ -7,7 +7,6 @@ import org.junit.Test
 import kotlin.random.Random
 
 class OtpGeneratorTest {
-
     @Test
     fun `length is always exactly six characters`() {
         repeat(200) { seed ->
@@ -28,13 +27,29 @@ class OtpGeneratorTest {
     fun `zeroes are padded on the left (small numbers don't shrink)`() {
         // Random(seed=0).nextInt(0, 1_000_000) returns a small int with this implementation,
         // but we just need to confirm that *whenever* the number is small it's padded.
-        val explicitlySmall = OtpGenerator.next(object : Random() {
-            private var consumed = false
-            override fun nextBits(bitCount: Int): Int = if (!consumed) { consumed = true; 0 } else 0
-            override fun nextInt(): Int = 0
-            override fun nextInt(until: Int): Int = 7
-            override fun nextInt(from: Int, until: Int): Int = 7
-        })
+        val explicitlySmall =
+            OtpGenerator.next(
+                object : Random() {
+                    private var consumed = false
+
+                    override fun nextBits(bitCount: Int): Int =
+                        if (!consumed) {
+                            consumed = true
+                            0
+                        } else {
+                            0
+                        }
+
+                    override fun nextInt(): Int = 0
+
+                    override fun nextInt(until: Int): Int = 7
+
+                    override fun nextInt(
+                        from: Int,
+                        until: Int,
+                    ): Int = 7
+                },
+            )
         assertEquals("000007", explicitlySmall)
     }
 

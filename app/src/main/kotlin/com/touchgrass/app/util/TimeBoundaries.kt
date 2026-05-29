@@ -16,12 +16,15 @@ import java.time.temporal.TemporalAdjusters
  * in UTC.
  */
 object TimeBoundaries {
-
     /**
      * Epoch-ms of 00:00 in [zone] on the calendar day containing [nowMillis].
      */
-    fun startOfToday(nowMillis: Long, zone: ZoneId = ZoneId.systemDefault()): Long =
-        Instant.ofEpochMilli(nowMillis)
+    fun startOfToday(
+        nowMillis: Long,
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): Long =
+        Instant
+            .ofEpochMilli(nowMillis)
             .atZone(zone)
             .toLocalDate()
             .atStartOfDay(zone)
@@ -34,7 +37,10 @@ object TimeBoundaries {
      * get the same answer either way most of the time and the spec doesn't require locale-aware
      * weeks.
      */
-    fun startOfWeek(nowMillis: Long, zone: ZoneId = ZoneId.systemDefault()): Long {
+    fun startOfWeek(
+        nowMillis: Long,
+        zone: ZoneId = ZoneId.systemDefault(),
+    ): Long {
         val today: LocalDate = Instant.ofEpochMilli(nowMillis).atZone(zone).toLocalDate()
         val monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         return monday.atStartOfDay(zone).toInstant().toEpochMilli()

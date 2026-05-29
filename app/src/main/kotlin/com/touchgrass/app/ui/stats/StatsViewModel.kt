@@ -15,30 +15,32 @@ import javax.inject.Inject
  * surface breakdown into a single [StatsUiState].
  */
 @HiltViewModel
-class StatsViewModel @Inject constructor(
-    blockEventRepository: BlockEventRepository,
-) : ViewModel() {
+class StatsViewModel
+    @Inject
+    constructor(
+        blockEventRepository: BlockEventRepository,
+    ) : ViewModel() {
+        val uiState: StateFlow<StatsUiState> =
+            combine(
+                blockEventRepository.todayCountFlow(),
+                blockEventRepository.thisWeekCountFlow(),
+                blockEventRepository.allTimeCountFlow(),
+                blockEventRepository.topSurfacesThisWeekFlow(),
+            ) { today, week, allTime, top ->
+                StatsUiState(
+                    today = today,
+                    thisWeek = week,
+                    allTime = allTime,
+                    topSurfacesThisWeek = top,
+                    loading = false,
+                )
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(STATE_SHARING_TIMEOUT_MS),
+                initialValue = StatsUiState(),
+            )
 
-    val uiState: StateFlow<StatsUiState> = combine(
-        blockEventRepository.todayCountFlow(),
-        blockEventRepository.thisWeekCountFlow(),
-        blockEventRepository.allTimeCountFlow(),
-        blockEventRepository.topSurfacesThisWeekFlow(),
-    ) { today, week, allTime, top ->
-        StatsUiState(
-            today = today,
-            thisWeek = week,
-            allTime = allTime,
-            topSurfacesThisWeek = top,
-            loading = false,
-        )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(STATE_SHARING_TIMEOUT_MS),
-        initialValue = StatsUiState(),
-    )
-
-    private companion object {
-        const val STATE_SHARING_TIMEOUT_MS = 5_000L
+        private companion object {
+            const val STATE_SHARING_TIMEOUT_MS = 5_000L
+        }
     }
-}

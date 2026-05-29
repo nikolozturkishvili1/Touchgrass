@@ -18,11 +18,12 @@ data class PauseUiState(
 ) {
     companion object {
         /** 5 min / 15 min / 30 min — matches the V1 spec §3.1.D ("5min, 15min, 30min"). */
-        val DEFAULT_DURATIONS_MS: List<Long> = listOf(
-            5L * 60L * 1_000L,
-            15L * 60L * 1_000L,
-            30L * 60L * 1_000L,
-        )
+        val DEFAULT_DURATIONS_MS: List<Long> =
+            listOf(
+                5L * 60L * 1_000L,
+                15L * 60L * 1_000L,
+                30L * 60L * 1_000L,
+            )
     }
 }
 

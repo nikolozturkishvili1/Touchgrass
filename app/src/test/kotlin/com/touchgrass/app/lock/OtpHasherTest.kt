@@ -7,7 +7,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OtpHasherTest {
-
     @Test
     fun `hash output is 64 hex characters (SHA-256)`() {
         val hashed = OtpHasher.hash("123456")

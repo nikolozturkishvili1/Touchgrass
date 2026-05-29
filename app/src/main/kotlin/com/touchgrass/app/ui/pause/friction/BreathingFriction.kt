@@ -28,7 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.touchgrass.app.ui.components.SecondaryButton
 import kotlinx.coroutines.delay
 
-private enum class BreathPhase(val label: String, val durationMs: Long, val targetScale: Float) {
+private enum class BreathPhase(
+    val label: String,
+    val durationMs: Long,
+    val targetScale: Float,
+) {
     InhaleStart("Breathe in", 4_000L, 1f),
     HoldHigh("Hold", 4_000L, 1f),
     ExhaleStart("Breathe out", 6_000L, 0.55f),

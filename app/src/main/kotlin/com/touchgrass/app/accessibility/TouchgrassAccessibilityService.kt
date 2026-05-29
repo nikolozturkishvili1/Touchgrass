@@ -30,7 +30,6 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class TouchgrassAccessibilityService : AccessibilityService() {
-
     @Inject lateinit var detectors: Set<@JvmSuppressWildcards Detector>
 
     @Inject lateinit var blockingStrategy: BlockingStrategy
@@ -53,6 +52,7 @@ class TouchgrassAccessibilityService : AccessibilityService() {
     // [onServiceConnected]. Volatile so the OS-thread read in [onAccessibilityEvent]
     // observes the latest write from the IO-thread collector without a lock.
     @Volatile private var touchgrassEnabled: Boolean = true
+
     @Volatile private var enabledPackages: Set<String> = emptySet()
 
     private val detectorsByPackage: Map<String, Detector> by lazy {
@@ -84,6 +84,9 @@ class TouchgrassAccessibilityService : AccessibilityService() {
         }
     }
 
+    // Guard-clause dispatch (many early returns) plus a deliberate catch-all below: one
+    // detector throwing must never crash the service and disable blocking for every app.
+    @Suppress("ReturnCount", "TooGenericExceptionCaught")
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         event ?: return
         val packageName = event.packageName?.toString() ?: return
@@ -103,14 +106,15 @@ class TouchgrassAccessibilityService : AccessibilityService() {
 
         val detector = detectorsByPackage[packageName] ?: return
 
-        val detection = try {
-            detector.detect(event, rootInActiveWindow)
-        } catch (t: Throwable) {
-            // Detector implementations are isolated; a bug in one must not crash the whole service.
-            // Without this guard, a single broken detector could disable blocking for every app.
-            Timber.e(t, "detector %s threw on event from %s", detector::class.simpleName, packageName)
-            return
-        }
+        val detection =
+            try {
+                detector.detect(event, rootInActiveWindow)
+            } catch (t: Throwable) {
+                // Detector implementations are isolated; a bug in one must not crash the whole service.
+                // Without this guard, a single broken detector could disable blocking for every app.
+                Timber.e(t, "detector %s threw on event from %s", detector::class.simpleName, packageName)
+                return
+            }
 
         if (detection is Detection.ShortFormFeed) {
             val debounceKey = "$packageName:${detection.surface}"

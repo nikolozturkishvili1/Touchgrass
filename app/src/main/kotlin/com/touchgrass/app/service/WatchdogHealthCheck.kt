@@ -17,27 +17,29 @@ import javax.inject.Singleton
  *  4. Else: [WatchdogHealth.Healthy].
  */
 @Singleton
-class WatchdogHealthCheck @Inject constructor(
-    private val heartbeat: Heartbeat,
-    private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
-    private val clock: Clock,
-) {
-    /**
-     * Six hours. During active use Touchgrass beats hundreds of times per day; a six-hour gap
-     * during waking hours means the service is genuinely dead. Long enough to avoid false
-     * positives during the user's sleep cycle.
-     */
-    @VisibleForTesting
-    internal var stalenessThresholdMs: Long = DEFAULT_STALENESS_MS
+class WatchdogHealthCheck
+    @Inject
+    constructor(
+        private val heartbeat: Heartbeat,
+        private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
+        private val clock: Clock,
+    ) {
+        /**
+         * Six hours. During active use Touchgrass beats hundreds of times per day; a six-hour gap
+         * during waking hours means the service is genuinely dead. Long enough to avoid false
+         * positives during the user's sleep cycle.
+         */
+        @VisibleForTesting
+        internal var stalenessThresholdMs: Long = DEFAULT_STALENESS_MS
 
-    suspend fun check(): WatchdogHealth {
-        if (!accessibilityEnablementCheck.isEnabled()) return WatchdogHealth.AccessibilityNotEnabled
-        val lastBeat = heartbeat.lastBeatElapsedMillis() ?: return WatchdogHealth.NeverBeaten
-        val gap = clock.elapsedMillis() - lastBeat
-        return if (gap > stalenessThresholdMs) WatchdogHealth.Stale(gap) else WatchdogHealth.Healthy
-    }
+        suspend fun check(): WatchdogHealth {
+            if (!accessibilityEnablementCheck.isEnabled()) return WatchdogHealth.AccessibilityNotEnabled
+            val lastBeat = heartbeat.lastBeatElapsedMillis() ?: return WatchdogHealth.NeverBeaten
+            val gap = clock.elapsedMillis() - lastBeat
+            return if (gap > stalenessThresholdMs) WatchdogHealth.Stale(gap) else WatchdogHealth.Healthy
+        }
 
-    companion object {
-        const val DEFAULT_STALENESS_MS: Long = 6L * 60L * 60L * 1_000L
+        companion object {
+            const val DEFAULT_STALENESS_MS: Long = 6L * 60L * 60L * 1_000L
+        }
     }
-}

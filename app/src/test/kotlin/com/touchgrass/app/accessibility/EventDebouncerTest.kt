@@ -7,9 +7,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class EventDebouncerTest {
-
-    private class FakeClock(var elapsed: Long = 0L) : Clock {
+    private class FakeClock(
+        var elapsed: Long = 0L,
+    ) : Clock {
         override fun nowMillis(): Long = elapsed
+
         override fun elapsedMillis(): Long = elapsed
     }
 

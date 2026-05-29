@@ -19,6 +19,7 @@ interface Clock {
     /** Production implementation backed by [System.currentTimeMillis] and [android.os.SystemClock.elapsedRealtime]. */
     object System : Clock {
         override fun nowMillis(): Long = java.lang.System.currentTimeMillis()
+
         override fun elapsedMillis(): Long = android.os.SystemClock.elapsedRealtime()
     }
 }

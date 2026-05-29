@@ -19,5 +19,8 @@ interface BlockingStrategy {
      * @param surface the detected surface identifier (e.g. `"youtube-shorts"`), so strategies can
      *   tailor copy or telemetry locally.
      */
-    suspend fun apply(service: AccessibilityService, surface: String)
+    suspend fun apply(
+        service: AccessibilityService,
+        surface: String,
+    )
 }

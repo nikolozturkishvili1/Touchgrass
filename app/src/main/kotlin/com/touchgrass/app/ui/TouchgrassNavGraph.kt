@@ -37,9 +37,7 @@ private object Routes {
 }
 
 @Composable
-fun TouchgrassNavGraph(
-    navController: NavHostController = rememberNavController(),
-) {
+fun TouchgrassNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
         startDestination = Routes.HOME,

@@ -15,6 +15,7 @@ enum class OnboardingStep {
     ;
 
     fun next(): OnboardingStep? = entries.getOrNull(ordinal + 1)
+
     fun previous(): OnboardingStep? = entries.getOrNull(ordinal - 1)
 
     val indexInFlow: Int get() = ordinal

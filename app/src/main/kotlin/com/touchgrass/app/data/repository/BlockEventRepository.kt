@@ -19,35 +19,38 @@ import javax.inject.Singleton
  * Acceptable for V1; the Stats screen re-anchors on open.
  */
 @Singleton
-class BlockEventRepository @Inject constructor(
-    private val dao: BlockEventDao,
-    private val clock: Clock,
-) {
-    suspend fun record(packageName: String, surface: String) {
-        dao.insert(
-            BlockEventEntity(
-                timestampMs = clock.nowMillis(),
-                packageName = packageName,
-                surface = surface,
-            ),
-        )
+class BlockEventRepository
+    @Inject
+    constructor(
+        private val dao: BlockEventDao,
+        private val clock: Clock,
+    ) {
+        suspend fun record(
+            packageName: String,
+            surface: String,
+        ) {
+            dao.insert(
+                BlockEventEntity(
+                    timestampMs = clock.nowMillis(),
+                    packageName = packageName,
+                    surface = surface,
+                ),
+            )
+        }
+
+        fun todayCountFlow(): Flow<Int> = dao.countSinceFlow(TimeBoundaries.startOfToday(clock.nowMillis()))
+
+        fun thisWeekCountFlow(): Flow<Int> = dao.countSinceFlow(TimeBoundaries.startOfWeek(clock.nowMillis()))
+
+        fun allTimeCountFlow(): Flow<Int> = dao.totalCountFlow()
+
+        fun topSurfacesThisWeekFlow(limit: Int = TOP_SURFACES_DEFAULT_LIMIT): Flow<List<SurfaceCount>> =
+            dao.topSurfacesSinceFlow(
+                sinceMs = TimeBoundaries.startOfWeek(clock.nowMillis()),
+                limit = limit,
+            )
+
+        companion object {
+            const val TOP_SURFACES_DEFAULT_LIMIT: Int = 5
+        }
     }
-
-    fun todayCountFlow(): Flow<Int> =
-        dao.countSinceFlow(TimeBoundaries.startOfToday(clock.nowMillis()))
-
-    fun thisWeekCountFlow(): Flow<Int> =
-        dao.countSinceFlow(TimeBoundaries.startOfWeek(clock.nowMillis()))
-
-    fun allTimeCountFlow(): Flow<Int> = dao.totalCountFlow()
-
-    fun topSurfacesThisWeekFlow(limit: Int = TOP_SURFACES_DEFAULT_LIMIT): Flow<List<SurfaceCount>> =
-        dao.topSurfacesSinceFlow(
-            sinceMs = TimeBoundaries.startOfWeek(clock.nowMillis()),
-            limit = limit,
-        )
-
-    companion object {
-        const val TOP_SURFACES_DEFAULT_LIMIT: Int = 5
-    }
-}

@@ -48,97 +48,104 @@ import javax.inject.Singleton
  *    cannot be relied on alone)
  */
 @Singleton
-class SnapchatSpotlightDetector @Inject constructor() : Detector {
+class SnapchatSpotlightDetector
+    @Inject
+    constructor() : Detector {
+        override val packageNames: Set<String> = setOf(PACKAGE_NAME)
 
-    override val packageNames: Set<String> = setOf(PACKAGE_NAME)
+        override fun detect(
+            event: AccessibilityEvent,
+            root: AccessibilityNodeInfo?,
+        ): Detection {
+            if (event.packageName?.toString() != PACKAGE_NAME) return Detection.NotInteresting
 
-    override fun detect(event: AccessibilityEvent, root: AccessibilityNodeInfo?): Detection {
-        if (event.packageName?.toString() != PACKAGE_NAME) return Detection.NotInteresting
+            // Fast path: class name on the window-state-changed event. Snapchat keeps a handful of
+            // Spotlight-named entry points (fragments + viewer activity); a substring match catches
+            // both `*.SpotlightFragment` and `*.SpotlightViewerActivity` style names without coupling
+            // to a specific package prefix that Snapchat reshuffles between releases.
+            val className = event.className?.toString().orEmpty()
+            if (className.containsAny(SPOTLIGHT_CLASS_HINTS)) {
+                return Detection.ShortFormFeed(SURFACE)
+            }
 
-        // Fast path: class name on the window-state-changed event. Snapchat keeps a handful of
-        // Spotlight-named entry points (fragments + viewer activity); a substring match catches
-        // both `*.SpotlightFragment` and `*.SpotlightViewerActivity` style names without coupling
-        // to a specific package prefix that Snapchat reshuffles between releases.
-        val className = event.className?.toString().orEmpty()
-        if (className.containsAny(SPOTLIGHT_CLASS_HINTS)) {
-            return Detection.ShortFormFeed(SURFACE)
+            // Slow path: scan the active window tree for a Spotlight-specific recycler/player view.
+            // `findAccessibilityNodeInfosByViewId` is the cheap built-in BFS Snapchat itself can't
+            // hide from us as long as the resource id survives ProGuard. We bail at the first hit.
+            val rootNode = root ?: return Detection.NotInteresting
+
+            if (rootNode.hasSpotlightContainer()) {
+                return Detection.ShortFormFeed(SURFACE)
+            }
+
+            return Detection.NotInteresting
         }
 
-        // Slow path: scan the active window tree for a Spotlight-specific recycler/player view.
-        // `findAccessibilityNodeInfosByViewId` is the cheap built-in BFS Snapchat itself can't
-        // hide from us as long as the resource id survives ProGuard. We bail at the first hit.
-        val rootNode = root ?: return Detection.NotInteresting
-
-        if (rootNode.hasSpotlightContainer()) {
-            return Detection.ShortFormFeed(SURFACE)
+        private fun AccessibilityNodeInfo.hasSpotlightContainer(): Boolean {
+            for (viewId in SPOTLIGHT_VIEW_IDS) {
+                val matches = findAccessibilityNodeInfosByViewId(viewId)
+                if (!matches.isNullOrEmpty()) return true
+            }
+            return false
         }
 
-        return Detection.NotInteresting
-    }
-
-    private fun AccessibilityNodeInfo.hasSpotlightContainer(): Boolean {
-        for (viewId in SPOTLIGHT_VIEW_IDS) {
-            val matches = findAccessibilityNodeInfosByViewId(viewId)
-            if (!matches.isNullOrEmpty()) return true
+        private fun String.containsAny(needles: Array<String>): Boolean {
+            for (needle in needles) if (contains(needle, ignoreCase = true)) return true
+            return false
         }
-        return false
+
+        companion object {
+            const val PACKAGE_NAME: String = "com.snapchat.android"
+
+            /** Stable surface identifier used by [Detection.ShortFormFeed] and the stats DB. */
+            const val SURFACE: String = "snapchat-spotlight"
+
+            /**
+             * Class-name substrings observed (or strongly suspected) in Snapchat's Spotlight stack
+             * across recent releases. Matched case-insensitively as substrings — Snapchat sometimes
+             * prefixes these with obfuscated package segments (e.g. `com.snap.spotlight.feed.x.y.…`).
+             *
+             * Update this list when Snapchat renames a fragment/activity and detection breaks. The
+             * literal word "Spotlight" is the load-bearing token; anything that includes it is a
+             * positive signal because no other Snapchat surface (Stories/Chat/Camera/Discover/Map/
+             * Memories) uses that word in its class name.
+             */
+            @JvmStatic
+            internal val SPOTLIGHT_CLASS_HINTS: Array<String> =
+                arrayOf(
+                    "SpotlightFragment",
+                    "SpotlightFeedFragment",
+                    "SpotlightViewerActivity",
+                    "SpotlightVerticalScrollPage",
+                    "SpotlightPlayer",
+                )
+
+            /**
+             * Resource view-IDs of the Spotlight feed recycler / player container observed across
+             * recent Snapchat releases. The first one is the canonical id; the rest are fallbacks
+             * for older/newer builds and A/B experiments.
+             *
+             * Resource IDs survive obfuscation better than class names — when class hints fail,
+             * these usually still work.
+             */
+            @JvmStatic
+            internal val SPOTLIGHT_VIEW_IDS: Array<String> =
+                arrayOf(
+                    "$PACKAGE_NAME:id/spotlight_recycler_view",
+                    "$PACKAGE_NAME:id/spotlight_feed_layout",
+                    "$PACKAGE_NAME:id/spotlight_player_view",
+                    "$PACKAGE_NAME:id/spotlight_view_pager",
+                )
+
+            /**
+             * Content-description / text substrings used purely as last-resort signals — only
+             * consulted via [SPOTLIGHT_VIEW_IDS] (we don't walk the tree just for text). Listed here
+             * so future maintainers know what to grep for in `uiautomator dump` output.
+             */
+            @Suppress("unused")
+            @JvmStatic
+            internal val SPOTLIGHT_CONTENT_HINTS: Array<String> =
+                arrayOf(
+                    "Spotlight",
+                )
+        }
     }
-
-    private fun String.containsAny(needles: Array<String>): Boolean {
-        for (needle in needles) if (contains(needle, ignoreCase = true)) return true
-        return false
-    }
-
-    companion object {
-        const val PACKAGE_NAME: String = "com.snapchat.android"
-
-        /** Stable surface identifier used by [Detection.ShortFormFeed] and the stats DB. */
-        const val SURFACE: String = "snapchat-spotlight"
-
-        /**
-         * Class-name substrings observed (or strongly suspected) in Snapchat's Spotlight stack
-         * across recent releases. Matched case-insensitively as substrings — Snapchat sometimes
-         * prefixes these with obfuscated package segments (e.g. `com.snap.spotlight.feed.x.y.…`).
-         *
-         * Update this list when Snapchat renames a fragment/activity and detection breaks. The
-         * literal word "Spotlight" is the load-bearing token; anything that includes it is a
-         * positive signal because no other Snapchat surface (Stories/Chat/Camera/Discover/Map/
-         * Memories) uses that word in its class name.
-         */
-        @JvmStatic
-        internal val SPOTLIGHT_CLASS_HINTS: Array<String> = arrayOf(
-            "SpotlightFragment",
-            "SpotlightFeedFragment",
-            "SpotlightViewerActivity",
-            "SpotlightVerticalScrollPage",
-            "SpotlightPlayer",
-        )
-
-        /**
-         * Resource view-IDs of the Spotlight feed recycler / player container observed across
-         * recent Snapchat releases. The first one is the canonical id; the rest are fallbacks
-         * for older/newer builds and A/B experiments.
-         *
-         * Resource IDs survive obfuscation better than class names — when class hints fail,
-         * these usually still work.
-         */
-        @JvmStatic
-        internal val SPOTLIGHT_VIEW_IDS: Array<String> = arrayOf(
-            "$PACKAGE_NAME:id/spotlight_recycler_view",
-            "$PACKAGE_NAME:id/spotlight_feed_layout",
-            "$PACKAGE_NAME:id/spotlight_player_view",
-            "$PACKAGE_NAME:id/spotlight_view_pager",
-        )
-
-        /**
-         * Content-description / text substrings used purely as last-resort signals — only
-         * consulted via [SPOTLIGHT_VIEW_IDS] (we don't walk the tree just for text). Listed here
-         * so future maintainers know what to grep for in `uiautomator dump` output.
-         */
-        @Suppress("unused")
-        @JvmStatic
-        internal val SPOTLIGHT_CONTENT_HINTS: Array<String> = arrayOf(
-            "Spotlight",
-        )
-    }
-}

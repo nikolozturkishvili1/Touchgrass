@@ -37,115 +37,120 @@ import javax.inject.Inject
  * [confirmTurnOff].
  */
 @HiltViewModel
-class HomeViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository,
-    private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
-    private val serviceLauncher: ServiceLauncher,
-    private val pauseManager: PauseManager,
-    private val commitmentLockManager: CommitmentLockManager,
-    private val clock: Clock,
-    blockEventRepository: BlockEventRepository,
-    pauseRepository: PauseRepository,
-) : ViewModel() {
+class HomeViewModel
+    @Inject
+    constructor(
+        private val preferencesRepository: PreferencesRepository,
+        private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
+        private val serviceLauncher: ServiceLauncher,
+        private val pauseManager: PauseManager,
+        private val commitmentLockManager: CommitmentLockManager,
+        private val clock: Clock,
+        blockEventRepository: BlockEventRepository,
+        pauseRepository: PauseRepository,
+    ) : ViewModel() {
+        private val accessibilityEnabled = MutableStateFlow(false)
+        private val _pendingLockChallenge = MutableStateFlow(false)
+        val pendingLockChallenge: StateFlow<Boolean> = _pendingLockChallenge.asStateFlow()
 
-    private val accessibilityEnabled = MutableStateFlow(false)
-    private val _pendingLockChallenge = MutableStateFlow(false)
-    val pendingLockChallenge: StateFlow<Boolean> = _pendingLockChallenge.asStateFlow()
+        private data class StableInputs(
+            val onboarded: Boolean,
+            val enabledAtAppLevel: Boolean,
+            val accessibilityOn: Boolean,
+            val pauseButtonVisible: Boolean,
+        )
 
-    private data class StableInputs(
-        val onboarded: Boolean,
-        val enabledAtAppLevel: Boolean,
-        val accessibilityOn: Boolean,
-        val pauseButtonVisible: Boolean,
-    )
+        private val stable: Flow<StableInputs> =
+            combine(
+                preferencesRepository.onboardingComplete,
+                preferencesRepository.touchgrassEnabled,
+                accessibilityEnabled,
+                pauseRepository.pauseButtonVisibleFlow,
+            ) { onboarded, enabled, accessibilityOn, pauseVisible ->
+                StableInputs(onboarded, enabled, accessibilityOn, pauseVisible)
+            }
 
-    private val stable: Flow<StableInputs> = combine(
-        preferencesRepository.onboardingComplete,
-        preferencesRepository.touchgrassEnabled,
-        accessibilityEnabled,
-        pauseRepository.pauseButtonVisibleFlow,
-    ) { onboarded, enabled, accessibilityOn, pauseVisible ->
-        StableInputs(onboarded, enabled, accessibilityOn, pauseVisible)
-    }
-
-    val uiState: StateFlow<HomeUiState> = combine(
-        stable,
-        blockEventRepository.todayCountFlow(),
-        pauseManager.pausedUntilMs,
-    ) { s, todaysCount, pausedUntil ->
-        when {
-            !s.onboarded -> HomeUiState.NeedsOnboarding
-            !s.accessibilityOn -> HomeUiState.AccessibilityOff
-            !s.enabledAtAppLevel -> HomeUiState.Off
-            clock.nowMillis() < pausedUntil -> HomeUiState.Paused(
-                pauseEndsAtMs = pausedUntil,
-                todaysBlockCount = todaysCount,
+        val uiState: StateFlow<HomeUiState> =
+            combine(
+                stable,
+                blockEventRepository.todayCountFlow(),
+                pauseManager.pausedUntilMs,
+            ) { s, todaysCount, pausedUntil ->
+                when {
+                    !s.onboarded -> HomeUiState.NeedsOnboarding
+                    !s.accessibilityOn -> HomeUiState.AccessibilityOff
+                    !s.enabledAtAppLevel -> HomeUiState.Off
+                    clock.nowMillis() < pausedUntil ->
+                        HomeUiState.Paused(
+                            pauseEndsAtMs = pausedUntil,
+                            todaysBlockCount = todaysCount,
+                        )
+                    else ->
+                        HomeUiState.On(
+                            todaysBlockCount = todaysCount,
+                            pauseButtonVisible = s.pauseButtonVisible,
+                        )
+                }
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(STATE_SHARING_TIMEOUT_MS),
+                initialValue = HomeUiState.Loading,
             )
-            else -> HomeUiState.On(
-                todaysBlockCount = todaysCount,
-                pauseButtonVisible = s.pauseButtonVisible,
-            )
+
+        init {
+            refreshAccessibilityStatus()
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(STATE_SHARING_TIMEOUT_MS),
-        initialValue = HomeUiState.Loading,
-    )
 
-    init {
-        refreshAccessibilityStatus()
-    }
+        /** Re-read the OS-level accessibility toggle. Cheap; call from `LifecycleResumeEffect`. */
+        fun refreshAccessibilityStatus() {
+            accessibilityEnabled.value = accessibilityEnablementCheck.isEnabled()
+        }
 
-    /** Re-read the OS-level accessibility toggle. Cheap; call from `LifecycleResumeEffect`. */
-    fun refreshAccessibilityStatus() {
-        accessibilityEnabled.value = accessibilityEnablementCheck.isEnabled()
-    }
-
-    /**
-     * Public entry point for the toggle.
-     *
-     * `enable=true` is always immediate. `enable=false` checks the commitment lock — if the
-     * lock is on, we set [pendingLockChallenge] = true and let the Composable show the gate.
-     * The actual turn-off happens via [confirmTurnOff] after a successful OTP verification.
-     */
-    fun setEnabled(enabled: Boolean) {
-        if (enabled) {
+        /**
+         * Public entry point for the toggle.
+         *
+         * `enable=true` is always immediate. `enable=false` checks the commitment lock — if the
+         * lock is on, we set [pendingLockChallenge] = true and let the Composable show the gate.
+         * The actual turn-off happens via [confirmTurnOff] after a successful OTP verification.
+         */
+        fun setEnabled(enabled: Boolean) {
+            if (enabled) {
+                viewModelScope.launch {
+                    preferencesRepository.setTouchgrassEnabled(true)
+                    serviceLauncher.start()
+                }
+                return
+            }
             viewModelScope.launch {
-                preferencesRepository.setTouchgrassEnabled(true)
-                serviceLauncher.start()
-            }
-            return
-        }
-        viewModelScope.launch {
-            if (commitmentLockManager.lockEnabledNow()) {
-                _pendingLockChallenge.value = true
-            } else {
-                applyTurnOff()
+                if (commitmentLockManager.lockEnabledNow()) {
+                    _pendingLockChallenge.value = true
+                } else {
+                    applyTurnOff()
+                }
             }
         }
-    }
 
-    fun cancelLockChallenge() {
-        _pendingLockChallenge.value = false
-    }
-
-    fun confirmTurnOff() {
-        viewModelScope.launch {
-            applyTurnOff()
+        fun cancelLockChallenge() {
             _pendingLockChallenge.value = false
         }
-    }
 
-    private suspend fun applyTurnOff() {
-        preferencesRepository.setTouchgrassEnabled(false)
-        serviceLauncher.stop()
-    }
+        fun confirmTurnOff() {
+            viewModelScope.launch {
+                applyTurnOff()
+                _pendingLockChallenge.value = false
+            }
+        }
 
-    fun cancelPause() {
-        viewModelScope.launch { pauseManager.cancelPause() }
-    }
+        private suspend fun applyTurnOff() {
+            preferencesRepository.setTouchgrassEnabled(false)
+            serviceLauncher.stop()
+        }
 
-    private companion object {
-        const val STATE_SHARING_TIMEOUT_MS = 5_000L
+        fun cancelPause() {
+            viewModelScope.launch { pauseManager.cancelPause() }
+        }
+
+        private companion object {
+            const val STATE_SHARING_TIMEOUT_MS = 5_000L
+        }
     }
-}

@@ -7,7 +7,6 @@ import org.junit.Test
 import kotlin.random.Random
 
 class RandomCodeGeneratorTest {
-
     @Test
     fun `code length matches the constant`() {
         repeat(20) { seed ->
@@ -21,7 +20,10 @@ class RandomCodeGeneratorTest {
         repeat(50) { seed ->
             val code = RandomCodeGenerator.next(Random(seed.toLong()))
             for (ch in code) {
-                assertTrue("forbidden char '$ch' in $code", ch != 'O' && ch != 'I' && ch != 'L' && ch != '0' && ch != '1')
+                assertTrue(
+                    "forbidden char '$ch' in $code",
+                    ch != 'O' && ch != 'I' && ch != 'L' && ch != '0' && ch != '1',
+                )
             }
         }
     }

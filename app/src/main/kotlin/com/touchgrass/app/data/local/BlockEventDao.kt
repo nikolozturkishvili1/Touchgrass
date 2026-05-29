@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface BlockEventDao {
-
     @Insert
     suspend fun insert(event: BlockEventEntity)
 
@@ -35,7 +34,10 @@ interface BlockEventDao {
         LIMIT :limit
         """,
     )
-    fun topSurfacesSinceFlow(sinceMs: Long, limit: Int): Flow<List<SurfaceCount>>
+    fun topSurfacesSinceFlow(
+        sinceMs: Long,
+        limit: Int,
+    ): Flow<List<SurfaceCount>>
 
     /** Used by a future retention worker; not wired in V1. */
     @Query("DELETE FROM block_events WHERE timestampMs < :beforeMs")

@@ -20,15 +20,15 @@ import org.junit.Test
  *  3. For You vs Following surface discrimination.
  */
 class TikTokDetectorTest {
-
     private val detector = TikTokDetector()
 
     // ---- mock helpers --------------------------------------------------------------------
 
-    private fun event(pkg: String?): AccessibilityEvent = mockk {
-        every { packageName } returns pkg
-        every { className } returns null
-    }
+    private fun event(pkg: String?): AccessibilityEvent =
+        mockk {
+            every { packageName } returns pkg
+            every { className } returns null
+        }
 
     /**
      * Build a leaf node with a content description, text, and selected flag. `childCount` is
@@ -38,15 +38,16 @@ class TikTokDetectorTest {
         contentDescription: String? = null,
         text: String? = null,
         selected: Boolean = false,
-    ): AccessibilityNodeInfo = mockk {
-        every { this@mockk.contentDescription } returns contentDescription
-        every { this@mockk.text } returns text
-        every { isSelected } returns selected
-        every { childCount } returns 0
-        every { getChild(any()) } returns null
-        // findAccessibilityNodeInfosByViewId is queried on the root only; default to empty.
-        every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
-    }
+    ): AccessibilityNodeInfo =
+        mockk {
+            every { this@mockk.contentDescription } returns contentDescription
+            every { this@mockk.text } returns text
+            every { isSelected } returns selected
+            every { childCount } returns 0
+            every { getChild(any()) } returns null
+            // findAccessibilityNodeInfosByViewId is queried on the root only; default to empty.
+            every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
+        }
 
     /**
      * Build a root node that:
@@ -59,31 +60,37 @@ class TikTokDetectorTest {
         contentDescription: String? = null,
         text: String? = null,
         selected: Boolean = false,
-    ): AccessibilityNodeInfo = mockk {
-        every { findAccessibilityNodeInfosByViewId(any()) } answers {
-            if (matchingViewId != null && firstArg<String>() == matchingViewId) {
-                listOf(mockk(relaxed = true))
-            } else {
-                emptyList()
+    ): AccessibilityNodeInfo =
+        mockk {
+            every { findAccessibilityNodeInfosByViewId(any()) } answers {
+                if (matchingViewId != null && firstArg<String>() == matchingViewId) {
+                    listOf(mockk(relaxed = true))
+                } else {
+                    emptyList()
+                }
+            }
+            every { this@mockk.contentDescription } returns contentDescription
+            every { this@mockk.text } returns text
+            every { isSelected } returns selected
+            every { childCount } returns children.size
+            every { getChild(any()) } answers {
+                val i = firstArg<Int>()
+                if (i in children.indices) children[i] else null
             }
         }
-        every { this@mockk.contentDescription } returns contentDescription
-        every { this@mockk.text } returns text
-        every { isSelected } returns selected
-        every { childCount } returns children.size
-        every { getChild(any()) } answers {
-            val i = firstArg<Int>()
-            if (i in children.indices) children[i] else null
-        }
-    }
 
     private fun likeNode() = leaf(contentDescription = "Like video")
+
     private fun commentNode() = leaf(contentDescription = "Comment on video")
+
     private fun shareNode() = leaf(contentDescription = "Share video")
 
-    private fun rightRail(): List<AccessibilityNodeInfo> = listOf(
-        likeNode(), commentNode(), shareNode(),
-    )
+    private fun rightRail(): List<AccessibilityNodeInfo> =
+        listOf(
+            likeNode(),
+            commentNode(),
+            shareNode(),
+        )
 
     // ---- packageNames --------------------------------------------------------------------
 
@@ -99,10 +106,11 @@ class TikTokDetectorTest {
 
     @Test
     fun `ignores events from other packages`() {
-        val r = root(
-            matchingViewId = "com.instagram.android:id/feed_layout",
-            children = rightRail(),
-        )
+        val r =
+            root(
+                matchingViewId = "com.instagram.android:id/feed_layout",
+                children = rightRail(),
+            )
         val result = detector.detect(event("com.instagram.android"), r)
         assertEquals(Detection.NotInteresting, result)
     }
@@ -125,30 +133,33 @@ class TikTokDetectorTest {
 
     @Test
     fun `detects For You feed via feed_layout view id and full action cluster`() {
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = rightRail(),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = rightRail(),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOR_YOU), result)
     }
 
     @Test
     fun `detects For You feed on the trill (Asia) package`() {
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_TRILL}:id/feed_layout",
-            children = rightRail(),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_TRILL}:id/feed_layout",
+                children = rightRail(),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_TRILL), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOR_YOU), result)
     }
 
     @Test
     fun `detects via fallback vertical_view_pager view id`() {
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/vertical_view_pager",
-            children = rightRail(),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/vertical_view_pager",
+                children = rightRail(),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOR_YOU), result)
     }
@@ -156,10 +167,11 @@ class TikTokDetectorTest {
     @Test
     fun `detects with only two of three right-rail buttons present`() {
         // Drop "share" — score should still be 2 of 3 and pass the threshold.
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = listOf(likeNode(), commentNode()),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = listOf(likeNode(), commentNode()),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOR_YOU), result)
     }
@@ -168,10 +180,11 @@ class TikTokDetectorTest {
     fun `picks Following surface when the Following tab is selected`() {
         val followingTab = leaf(text = "Following", selected = true)
         val forYouTab = leaf(text = "For You", selected = false)
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = rightRail() + followingTab + forYouTab,
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = rightRail() + followingTab + forYouTab,
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOLLOWING), result)
     }
@@ -180,10 +193,11 @@ class TikTokDetectorTest {
     fun `defaults to For You when Following tab exists but is not selected`() {
         val followingTab = leaf(text = "Following", selected = false)
         val forYouTab = leaf(text = "For You", selected = true)
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = rightRail() + followingTab + forYouTab,
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = rightRail() + followingTab + forYouTab,
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.ShortFormFeed(TikTokDetector.SURFACE_FOR_YOU), result)
     }
@@ -230,20 +244,22 @@ class TikTokDetectorTest {
     @Test
     fun `ignores screen that has a feed container view id but no action cluster`() {
         // Guards against a false-positive: a screen that re-uses a known id but isn't a feed.
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = listOf(leaf(text = "Loading...")),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = listOf(leaf(text = "Loading...")),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.NotInteresting, result)
     }
 
     @Test
     fun `ignores screen with only one right-rail button present`() {
-        val r = root(
-            matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
-            children = listOf(likeNode()),
-        )
+        val r =
+            root(
+                matchingViewId = "${TikTokDetector.PACKAGE_MUSICALLY}:id/feed_layout",
+                children = listOf(likeNode()),
+            )
         val result = detector.detect(event(TikTokDetector.PACKAGE_MUSICALLY), r)
         assertEquals(Detection.NotInteresting, result)
     }

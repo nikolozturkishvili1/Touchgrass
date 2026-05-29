@@ -19,31 +19,35 @@ import javax.inject.Singleton
  * path must serialize per-key to avoid two readers racing the asset stream.
  */
 @Singleton
-class OemRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val json: Json,
-) {
-    private val cache = mutableMapOf<OemId, OemWalkthrough?>()
-    private val cacheMutex = Mutex()
+class OemRepository
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+        private val json: Json,
+    ) {
+        private val cache = mutableMapOf<OemId, OemWalkthrough?>()
+        private val cacheMutex = Mutex()
 
-    /**
-     * Return the walkthrough for [oemId], or `null` if we don't ship one for that OEM.
-     * The onboarding code falls back to [OemId.Generic] in that case.
-     */
-    suspend fun walkthroughFor(oemId: OemId): OemWalkthrough? = withContext(Dispatchers.IO) {
-        cacheMutex.withLock {
-            cache[oemId]?.let { return@withLock it }
+        /**
+         * Return the walkthrough for [oemId], or `null` if we don't ship one for that OEM.
+         * The onboarding code falls back to [OemId.Generic] in that case.
+         */
+        suspend fun walkthroughFor(oemId: OemId): OemWalkthrough? =
+            withContext(Dispatchers.IO) {
+                cacheMutex.withLock {
+                    cache[oemId]?.let { return@withLock it }
 
-            val parsed: OemWalkthrough? = runCatching {
-                context.assets.open("oem/${oemId.key}.json").use { stream ->
-                    json.decodeFromString<OemWalkthrough>(stream.bufferedReader().readText())
+                    val parsed: OemWalkthrough? =
+                        runCatching {
+                            context.assets.open("oem/${oemId.key}.json").use { stream ->
+                                json.decodeFromString<OemWalkthrough>(stream.bufferedReader().readText())
+                            }
+                        }.onFailure {
+                            Timber.d(it, "no walkthrough asset for oemId=%s", oemId.key)
+                        }.getOrNull()
+
+                    cache[oemId] = parsed
+                    parsed
                 }
-            }.onFailure {
-                Timber.d(it, "no walkthrough asset for oemId=%s", oemId.key)
-            }.getOrNull()
-
-            cache[oemId] = parsed
-            parsed
-        }
+            }
     }
-}

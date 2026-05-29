@@ -65,20 +65,22 @@ fun StatsScreen(
                         Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                ),
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
             )
         },
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState()),
         ) {
             Spacer(Modifier.height(8.dp))
             Text(
@@ -88,8 +90,9 @@ fun StatsScreen(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Every reel and short Touchgrass stopped for you. " +
-                    "On-device, never sent anywhere.",
+                text =
+                    "Every reel and short Touchgrass stopped for you. " +
+                        "On-device, never sent anywhere.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -120,8 +123,9 @@ fun StatsScreen(
                 }
             } else if (!state.loading) {
                 Text(
-                    text = "Nothing yet. That's either great or you haven't opened a reel — " +
-                        "either way, well played.",
+                    text =
+                        "Nothing yet. That's either great or you haven't opened a reel — " +
+                            "either way, well played.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -132,7 +136,11 @@ fun StatsScreen(
 }
 
 @Composable
-private fun CountCard(label: String, value: Int, estimateMinutesSaved: Int) {
+private fun CountCard(
+    label: String,
+    value: Int,
+    estimateMinutesSaved: Int,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -163,7 +171,11 @@ private fun CountCard(label: String, value: Int, estimateMinutesSaved: Int) {
 }
 
 @Composable
-private fun SmallCountCard(label: String, value: Int, modifier: Modifier = Modifier) {
+private fun SmallCountCard(
+    label: String,
+    value: Int,
+    modifier: Modifier = Modifier,
+) {
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -204,27 +216,29 @@ private fun SurfaceRow(surface: SurfaceCount) {
     }
 }
 
-private fun humanizeSurface(surface: String): String = when (surface) {
-    "youtube-shorts" -> "YouTube Shorts"
-    "instagram-reels-tab" -> "Instagram Reels (tab)"
-    "instagram-reels-feed" -> "Instagram Reels (feed)"
-    "instagram-reels-explore" -> "Instagram Reels (Explore)"
-    "instagram-reels-dm" -> "Instagram Reels (DM)"
-    "tiktok-foryou" -> "TikTok For You"
-    "tiktok-following" -> "TikTok Following"
-    "facebook-reels-viewer" -> "Facebook Reels"
-    "facebook-reels-tab" -> "Facebook Reels (tab)"
-    "snapchat-spotlight" -> "Snapchat Spotlight"
-    "chrome-youtube-shorts" -> "Chrome: YouTube Shorts"
-    "samsung-internet-youtube-shorts" -> "Samsung Internet: YouTube Shorts"
-    else -> surface
-}
+private fun humanizeSurface(surface: String): String =
+    when (surface) {
+        "youtube-shorts" -> "YouTube Shorts"
+        "instagram-reels-tab" -> "Instagram Reels (tab)"
+        "instagram-reels-feed" -> "Instagram Reels (feed)"
+        "instagram-reels-explore" -> "Instagram Reels (Explore)"
+        "instagram-reels-dm" -> "Instagram Reels (DM)"
+        "tiktok-foryou" -> "TikTok For You"
+        "tiktok-following" -> "TikTok Following"
+        "facebook-reels-viewer" -> "Facebook Reels"
+        "facebook-reels-tab" -> "Facebook Reels (tab)"
+        "snapchat-spotlight" -> "Snapchat Spotlight"
+        "chrome-youtube-shorts" -> "Chrome: YouTube Shorts"
+        "samsung-internet-youtube-shorts" -> "Samsung Internet: YouTube Shorts"
+        else -> surface
+    }
 
-private fun formatMinutes(minutes: Int): String = when {
-    minutes < 60 -> "$minutes min"
-    minutes < 60 * 24 -> "${minutes / 60}h ${minutes % 60}m"
-    else -> "${minutes / (60 * 24)}d ${(minutes / 60) % 24}h"
-}
+private fun formatMinutes(minutes: Int): String =
+    when {
+        minutes < 60 -> "$minutes min"
+        minutes < 60 * 24 -> "${minutes / 60}h ${minutes % 60}m"
+        else -> "${minutes / (60 * 24)}d ${(minutes / 60) % 24}h"
+    }
 
 /**
  * Conservative estimate: every block prevents ~4 minutes of doomscroll on average. Calibrate
@@ -249,13 +263,14 @@ private fun StatsPopulatedPreview() {
                 today = 23,
                 thisWeek = 187,
                 allTime = 1042,
-                topSurfacesThisWeek = listOf(
-                    SurfaceCount("instagram-reels-tab", 67),
-                    SurfaceCount("tiktok-foryou", 54),
-                    SurfaceCount("youtube-shorts", 38),
-                    SurfaceCount("snapchat-spotlight", 18),
-                    SurfaceCount("facebook-reels-viewer", 10),
-                ),
+                topSurfacesThisWeek =
+                    listOf(
+                        SurfaceCount("instagram-reels-tab", 67),
+                        SurfaceCount("tiktok-foryou", 54),
+                        SurfaceCount("youtube-shorts", 38),
+                        SurfaceCount("snapchat-spotlight", 18),
+                        SurfaceCount("facebook-reels-viewer", 10),
+                    ),
                 loading = false,
             ),
             onNavigateBack = {},
@@ -272,10 +287,11 @@ private fun StatsPopulatedDarkPreview() {
                 today = 23,
                 thisWeek = 187,
                 allTime = 1042,
-                topSurfacesThisWeek = listOf(
-                    SurfaceCount("instagram-reels-tab", 67),
-                    SurfaceCount("tiktok-foryou", 54),
-                ),
+                topSurfacesThisWeek =
+                    listOf(
+                        SurfaceCount("instagram-reels-tab", 67),
+                        SurfaceCount("tiktok-foryou", 54),
+                    ),
                 loading = false,
             ),
             onNavigateBack = {},

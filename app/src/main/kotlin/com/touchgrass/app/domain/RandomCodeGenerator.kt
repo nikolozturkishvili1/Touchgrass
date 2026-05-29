@@ -15,7 +15,8 @@ object RandomCodeGenerator {
     private val ALPHABET: List<Char> =
         (('A'..'Z') + ('2'..'9')).filter { it != 'O' && it != 'I' && it != 'L' }
 
-    fun next(random: Random = Random.Default): String = buildString(CODE_LENGTH) {
-        repeat(CODE_LENGTH) { append(ALPHABET[random.nextInt(ALPHABET.size)]) }
-    }
+    fun next(random: Random = Random.Default): String =
+        buildString(CODE_LENGTH) {
+            repeat(CODE_LENGTH) { append(ALPHABET[random.nextInt(ALPHABET.size)]) }
+        }
 }

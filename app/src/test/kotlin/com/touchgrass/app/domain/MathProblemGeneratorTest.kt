@@ -6,7 +6,6 @@ import org.junit.Test
 import kotlin.random.Random
 
 class MathProblemGeneratorTest {
-
     @Test
     fun `addition produces three-digit operands with correct answer`() {
         // Random.nextInt(3) returns 0 for seed=0 first call → addition branch.

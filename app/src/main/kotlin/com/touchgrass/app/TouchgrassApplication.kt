@@ -21,8 +21,9 @@ import javax.inject.Inject
  *    spec §4.6) can be constructor-injected.
  */
 @HiltAndroidApp
-class TouchgrassApplication : Application(), Configuration.Provider {
-
+class TouchgrassApplication :
+    Application(),
+    Configuration.Provider {
     @Inject lateinit var workerFactory: HiltWorkerFactory
 
     @Inject lateinit var watchdogScheduler: WatchdogScheduler
@@ -46,8 +47,10 @@ class TouchgrassApplication : Application(), Configuration.Provider {
     }
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setWorkerFactory(workerFactory)
-            .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR)
-            .build()
+        get() =
+            Configuration
+                .Builder()
+                .setWorkerFactory(workerFactory)
+                .setMinimumLoggingLevel(if (BuildConfig.DEBUG) android.util.Log.DEBUG else android.util.Log.ERROR)
+                .build()
 }

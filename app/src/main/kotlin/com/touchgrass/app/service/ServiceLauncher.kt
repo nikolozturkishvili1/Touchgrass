@@ -13,18 +13,20 @@ import javax.inject.Singleton
  * (Compose UI) and [BootReceiver] don't duplicate the foreground-service start incantation.
  */
 @Singleton
-class ServiceLauncher @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
-    fun start() {
-        val intent = Intent(context, TouchgrassForegroundService::class.java)
-        runCatching { ContextCompat.startForegroundService(context, intent) }
-            .onFailure { Timber.e(it, "failed to start TouchgrassForegroundService") }
-    }
+class ServiceLauncher
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        fun start() {
+            val intent = Intent(context, TouchgrassForegroundService::class.java)
+            runCatching { ContextCompat.startForegroundService(context, intent) }
+                .onFailure { Timber.e(it, "failed to start TouchgrassForegroundService") }
+        }
 
-    fun stop() {
-        val intent = Intent(context, TouchgrassForegroundService::class.java)
-        runCatching { context.stopService(intent) }
-            .onFailure { Timber.w(it, "stopService threw") }
+        fun stop() {
+            val intent = Intent(context, TouchgrassForegroundService::class.java)
+            runCatching { context.stopService(intent) }
+                .onFailure { Timber.w(it, "stopService threw") }
+        }
     }
-}

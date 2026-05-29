@@ -12,7 +12,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class QuickPeekManagerTest {
-
     private fun manager(enabled: MutableStateFlow<Boolean>): QuickPeekManager {
         val repo = mockk<PauseRepository>()
         every { repo.quickPeekEnabledFlow } returns enabled
@@ -21,60 +20,66 @@ class QuickPeekManagerTest {
     }
 
     @Test
-    fun `disabled — never grants a peek`() = runTest {
-        val manager = manager(MutableStateFlow(false))
+    fun `disabled — never grants a peek`() =
+        runTest {
+            val manager = manager(MutableStateFlow(false))
 
-        assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-        assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-    }
-
-    @Test
-    fun `enabled — first call for a package grants a peek`() = runTest {
-        val manager = manager(MutableStateFlow(true))
-
-        assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-    }
+            assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+            assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+        }
 
     @Test
-    fun `enabled — second call for the same package does not grant a peek`() = runTest {
-        val manager = manager(MutableStateFlow(true))
+    fun `enabled — first call for a package grants a peek`() =
+        runTest {
+            val manager = manager(MutableStateFlow(true))
 
-        assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-        assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-    }
-
-    @Test
-    fun `enabled — different packages get independent peeks`() = runTest {
-        val manager = manager(MutableStateFlow(true))
-
-        assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-        assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
-    }
+            assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+        }
 
     @Test
-    fun `switching packages resets the prior package's peek state`() = runTest {
-        val manager = manager(MutableStateFlow(true))
+    fun `enabled — second call for the same package does not grant a peek`() =
+        runTest {
+            val manager = manager(MutableStateFlow(true))
 
-        assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-        assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
-        // Coming back to YouTube — the IG switch reset the YT flag.
-        assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-        assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
-    }
+            assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+            assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+        }
 
     @Test
-    fun `flipping enabled off clears existing peek state so flipping back on starts fresh`() = runTest {
-        val enabled = MutableStateFlow(true)
-        val manager = manager(enabled)
+    fun `enabled — different packages get independent peeks`() =
+        runTest {
+            val manager = manager(MutableStateFlow(true))
 
-        assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
-        assertFalse(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+            assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+            assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+        }
 
-        enabled.value = false
-        assertFalse(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+    @Test
+    fun `switching packages resets the prior package's peek state`() =
+        runTest {
+            val manager = manager(MutableStateFlow(true))
 
-        enabled.value = true
-        // Toggle-off cleared the consumption map; first call after re-enable is a fresh peek.
-        assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
-    }
+            assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+            assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+            // Coming back to YouTube — the IG switch reset the YT flag.
+            assertTrue(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+            assertFalse(manager.checkAndConsumeQuickPeek("com.google.android.youtube"))
+        }
+
+    @Test
+    fun `flipping enabled off clears existing peek state so flipping back on starts fresh`() =
+        runTest {
+            val enabled = MutableStateFlow(true)
+            val manager = manager(enabled)
+
+            assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+            assertFalse(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+
+            enabled.value = false
+            assertFalse(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+
+            enabled.value = true
+            // Toggle-off cleared the consumption map; first call after re-enable is a fresh peek.
+            assertTrue(manager.checkAndConsumeQuickPeek("com.instagram.android"))
+        }
 }

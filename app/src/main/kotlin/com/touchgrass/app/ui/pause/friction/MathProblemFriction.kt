@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -21,7 +22,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.text.KeyboardOptions
 import com.touchgrass.app.domain.MathProblem
 import com.touchgrass.app.domain.MathProblemGenerator
 import com.touchgrass.app.ui.components.PrimaryButton
@@ -86,7 +86,12 @@ fun MathProblemFriction(
         Spacer(Modifier.height(24.dp))
         PrimaryButton(
             text = "Check",
-            onClick = { handleCheck(input, problem, onComplete) { attemptFailed = true; input = "" } },
+            onClick = {
+                handleCheck(input, problem, onComplete) {
+                    attemptFailed = true
+                    input = ""
+                }
+            },
             enabled = input.isNotBlank(),
         )
         Spacer(Modifier.height(8.dp))
@@ -100,6 +105,10 @@ private fun handleCheck(
     onCorrect: () -> Unit,
     onWrong: () -> Unit,
 ) {
-    val parsed = input.toIntOrNull() ?: run { onWrong(); return }
+    val parsed =
+        input.toIntOrNull() ?: run {
+            onWrong()
+            return
+        }
     if (parsed == problem.answer) onCorrect() else onWrong()
 }

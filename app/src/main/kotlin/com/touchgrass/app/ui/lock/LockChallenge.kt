@@ -55,9 +55,10 @@ fun LockChallenge(
 
     LaunchedEffect(state.verified) {
         if (state.verified) {
-            val email = state.sentToEmail
-                ?: state.savedEmail
-                ?: state.typedEmail
+            val email =
+                state.sentToEmail
+                    ?: state.savedEmail
+                    ?: state.typedEmail
             onVerified(email)
         }
     }
@@ -86,9 +87,10 @@ private fun LockChallengeContent(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp, vertical = 24.dp),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -107,31 +109,34 @@ private fun LockChallengeContent(
             Spacer(Modifier.height(24.dp))
 
             when (state.phase) {
-                LockChallengePhase.NeedsEmail -> EmailEntry(
-                    typedEmail = state.typedEmail,
-                    onTypedEmailChange = onTypedEmailChange,
-                    errorMessage = state.errorMessage,
-                    inFlight = state.inFlight,
-                )
-                LockChallengePhase.AwaitingCode -> OtpEntry(
-                    sentToEmail = state.sentToEmail ?: state.savedEmail ?: state.typedEmail,
-                    typedOtp = state.typedOtp,
-                    onTypedOtpChange = onTypedOtpChange,
-                    errorMessage = state.errorMessage,
-                    cooldownSecondsRemaining = state.cooldownSecondsRemaining,
-                    inFlight = state.inFlight,
-                )
+                LockChallengePhase.NeedsEmail ->
+                    EmailEntry(
+                        typedEmail = state.typedEmail,
+                        onTypedEmailChange = onTypedEmailChange,
+                        errorMessage = state.errorMessage,
+                        inFlight = state.inFlight,
+                    )
+                LockChallengePhase.AwaitingCode ->
+                    OtpEntry(
+                        sentToEmail = state.sentToEmail ?: state.savedEmail ?: state.typedEmail,
+                        typedOtp = state.typedOtp,
+                        onTypedOtpChange = onTypedOtpChange,
+                        errorMessage = state.errorMessage,
+                        cooldownSecondsRemaining = state.cooldownSecondsRemaining,
+                        inFlight = state.inFlight,
+                    )
                 LockChallengePhase.Done -> Unit
             }
         }
 
         Column(modifier = Modifier.fillMaxWidth()) {
             when (state.phase) {
-                LockChallengePhase.NeedsEmail -> PrimaryButton(
-                    text = if (state.inFlight) "Sending..." else "Send code",
-                    onClick = onSend,
-                    enabled = !state.inFlight && state.typedEmail.isNotBlank(),
-                )
+                LockChallengePhase.NeedsEmail ->
+                    PrimaryButton(
+                        text = if (state.inFlight) "Sending..." else "Send code",
+                        onClick = onSend,
+                        enabled = !state.inFlight && state.typedEmail.isNotBlank(),
+                    )
                 LockChallengePhase.AwaitingCode -> {
                     PrimaryButton(
                         text = if (state.inFlight) "Verifying..." else "Verify",
@@ -140,9 +145,12 @@ private fun LockChallengeContent(
                     )
                     Spacer(Modifier.height(8.dp))
                     SecondaryButton(
-                        text = if (state.cooldownSecondsRemaining > 0)
-                            "Resend in ${state.cooldownSecondsRemaining}s"
-                        else "Resend code",
+                        text =
+                            if (state.cooldownSecondsRemaining > 0) {
+                                "Resend in ${state.cooldownSecondsRemaining}s"
+                            } else {
+                                "Resend code"
+                            },
                         onClick = onSend,
                         enabled = state.cooldownSecondsRemaining == 0 && !state.inFlight,
                     )
@@ -165,8 +173,9 @@ private fun EmailEntry(
     inFlight: Boolean,
 ) {
     Text(
-        text = "We'll email you a 6-digit code. Use an address you actually check — this is how " +
-            "you'll get back in if you change your mind.",
+        text =
+            "We'll email you a 6-digit code. Use an address you actually check — this is how " +
+                "you'll get back in if you change your mind.",
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -258,12 +267,13 @@ private fun LockChallengeOtpPreview() {
     TouchgrassTheme {
         LockChallengeContent(
             purpose = "Turn off Touchgrass",
-            state = LockChallengeUiState(
-                phase = LockChallengePhase.AwaitingCode,
-                sentToEmail = "you@example.com",
-                typedOtp = "147",
-                cooldownSecondsRemaining = 42,
-            ),
+            state =
+                LockChallengeUiState(
+                    phase = LockChallengePhase.AwaitingCode,
+                    sentToEmail = "you@example.com",
+                    typedOtp = "147",
+                    cooldownSecondsRemaining = 42,
+                ),
             onTypedEmailChange = {},
             onTypedOtpChange = {},
             onSend = {},

@@ -20,13 +20,16 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 class BootReceiver : BroadcastReceiver() {
-
     @Inject lateinit var serviceLauncher: ServiceLauncher
 
-    override fun onReceive(context: Context, intent: Intent) {
+    override fun onReceive(
+        context: Context,
+        intent: Intent,
+    ) {
         when (intent.action) {
             Intent.ACTION_BOOT_COMPLETED,
-            Intent.ACTION_MY_PACKAGE_REPLACED -> {
+            Intent.ACTION_MY_PACKAGE_REPLACED,
+            -> {
                 Timber.i("BootReceiver: action=%s, starting foreground service", intent.action)
                 serviceLauncher.start()
             }

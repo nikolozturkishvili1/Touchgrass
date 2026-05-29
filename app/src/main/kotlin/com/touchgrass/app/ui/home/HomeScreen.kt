@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.SettingsSuggest
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.compose.material3.Surface
 import com.touchgrass.app.ui.components.PrimaryButton
 import com.touchgrass.app.ui.components.SecondaryButton
 import com.touchgrass.app.ui.lock.LockChallenge
@@ -112,9 +112,10 @@ fun HomeScreen(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 32.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 32.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -127,18 +128,20 @@ fun HomeScreen(
                     HomeUiState.Loading -> Unit
                     HomeUiState.NeedsOnboarding -> NeedsOnboardingContent(onStartOnboarding)
                     HomeUiState.AccessibilityOff -> AccessibilityOffContent(onOpenAccessibilitySettings)
-                    is HomeUiState.On -> OnContent(
-                        state = state,
-                        onTurnOff = { onToggle(false) },
-                        onOpenTrustDashboard = onOpenTrustDashboard,
-                        onOpenStats = onOpenStats,
-                        onOpenPause = onOpenPause,
-                    )
-                    is HomeUiState.Paused -> PausedContent(
-                        state = state,
-                        onCancelPause = onCancelPause,
-                        onOpenTrustDashboard = onOpenTrustDashboard,
-                    )
+                    is HomeUiState.On ->
+                        OnContent(
+                            state = state,
+                            onTurnOff = { onToggle(false) },
+                            onOpenTrustDashboard = onOpenTrustDashboard,
+                            onOpenStats = onOpenStats,
+                            onOpenPause = onOpenPause,
+                        )
+                    is HomeUiState.Paused ->
+                        PausedContent(
+                            state = state,
+                            onCancelPause = onCancelPause,
+                            onOpenTrustDashboard = onOpenTrustDashboard,
+                        )
                     HomeUiState.Off -> OffContent(onTurnOn = { onToggle(true) })
                 }
             }
@@ -149,9 +152,10 @@ fun HomeScreen(
         if (state !is HomeUiState.Loading && state !is HomeUiState.NeedsOnboarding) {
             IconButton(
                 onClick = onOpenSettings,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
             ) {
                 Icon(
                     imageVector = Icons.Outlined.SettingsSuggest,
@@ -195,8 +199,11 @@ private fun OnContent(
     Title("Touchgrass is on.")
     Spacer(Modifier.height(8.dp))
     Subtitle(
-        if (state.todaysBlockCount == 0) "Reels and shorts are blocked."
-        else "Saves today: ${state.todaysBlockCount}",
+        if (state.todaysBlockCount == 0) {
+            "Reels and shorts are blocked."
+        } else {
+            "Saves today: ${state.todaysBlockCount}"
+        },
     )
     Spacer(Modifier.height(32.dp))
     if (state.todaysBlockCount > 0) {
@@ -239,8 +246,11 @@ private fun PausedContent(
     Title("Paused.")
     Spacer(Modifier.height(8.dp))
     Subtitle(
-        if (secondsRemaining == 0L) "Pause is over — Touchgrass is back on."
-        else "$minutes:${seconds.toString().padStart(2, '0')} left",
+        if (secondsRemaining == 0L) {
+            "Pause is over — Touchgrass is back on."
+        } else {
+            "$minutes:${seconds.toString().padStart(2, '0')} left"
+        },
     )
     Spacer(Modifier.height(32.dp))
     SecondaryButton(text = "Cancel pause", onClick = onCancelPause)
@@ -305,7 +315,14 @@ private fun OnLightPreview() {
     TouchgrassTheme(darkTheme = false) {
         HomeScreen(
             HomeUiState.On(todaysBlockCount = 47, pauseButtonVisible = true),
-            {}, {}, {}, {}, {}, {}, {}, {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
         )
     }
 }
@@ -316,7 +333,14 @@ private fun OnDarkPreview() {
     TouchgrassTheme(darkTheme = true) {
         HomeScreen(
             HomeUiState.On(todaysBlockCount = 47, pauseButtonVisible = true),
-            {}, {}, {}, {}, {}, {}, {}, {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
         )
     }
 }
@@ -330,7 +354,14 @@ private fun PausedPreview() {
                 pauseEndsAtMs = System.currentTimeMillis() + 4L * 60L * 1_000L + 32L * 1_000L,
                 todaysBlockCount = 23,
             ),
-            {}, {}, {}, {}, {}, {}, {}, {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
         )
     }
 }

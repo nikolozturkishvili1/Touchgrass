@@ -93,20 +93,22 @@ fun SettingsScreen(
                             Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back")
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground,
-                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-                    ),
+                    colors =
+                        TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            titleContentColor = MaterialTheme.colorScheme.onBackground,
+                            navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+                        ),
                 )
             },
         ) { padding ->
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 24.dp)
-                    .verticalScroll(rememberScrollState()),
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(horizontal = 24.dp)
+                        .verticalScroll(rememberScrollState()),
             ) {
                 Spacer(Modifier.height(8.dp))
                 LinkRow(
@@ -152,11 +154,12 @@ fun SettingsScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 LockChallenge(
-                    purpose = when (state.lockChallenge) {
-                        LockChallengeMode.Enrolling -> "Enable commitment lock"
-                        LockChallengeMode.Disenrolling -> "Disable commitment lock"
-                        LockChallengeMode.None -> ""
-                    },
+                    purpose =
+                        when (state.lockChallenge) {
+                            LockChallengeMode.Enrolling -> "Enable commitment lock"
+                            LockChallengeMode.Disenrolling -> "Disable commitment lock"
+                            LockChallengeMode.None -> ""
+                        },
                     requiresEmail = state.lockChallenge == LockChallengeMode.Enrolling,
                     onVerified = onLockChallengeCompleted,
                     onCancel = onLockChallengeCancelled,
@@ -318,7 +321,10 @@ private fun ToggleRow(
 }
 
 @Composable
-private fun BudgetPicker(selected: Long, onSelect: (Long) -> Unit) {
+private fun BudgetPicker(
+    selected: Long,
+    onSelect: (Long) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -336,7 +342,10 @@ private fun BudgetPicker(selected: Long, onSelect: (Long) -> Unit) {
 }
 
 @Composable
-private fun FrictionPicker(selected: FrictionMode, onSelect: (FrictionMode) -> Unit) {
+private fun FrictionPicker(
+    selected: FrictionMode,
+    onSelect: (FrictionMode) -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -354,21 +363,23 @@ private fun FrictionPicker(selected: FrictionMode, onSelect: (FrictionMode) -> U
     }
 }
 
-private fun friendlyName(mode: FrictionMode): String = when (mode) {
-    FrictionMode.None -> "None"
-    FrictionMode.WaitTimer -> "Wait 5 seconds"
-    FrictionMode.MathProblem -> "Solve a math problem"
-    FrictionMode.RandomCode -> "Type a 30-character code"
-    FrictionMode.Breathing -> "Breathe for 30 seconds"
-}
+private fun friendlyName(mode: FrictionMode): String =
+    when (mode) {
+        FrictionMode.None -> "None"
+        FrictionMode.WaitTimer -> "Wait 5 seconds"
+        FrictionMode.MathProblem -> "Solve a math problem"
+        FrictionMode.RandomCode -> "Type a 30-character code"
+        FrictionMode.Breathing -> "Breathe for 30 seconds"
+    }
 
-private fun friendlyDescription(mode: FrictionMode): String = when (mode) {
-    FrictionMode.None -> "Pause starts immediately. Use sparingly."
-    FrictionMode.WaitTimer -> "Just a small pause between impulse and action."
-    FrictionMode.MathProblem -> "Engage the prefrontal cortex briefly."
-    FrictionMode.RandomCode -> "The maximalist option."
-    FrictionMode.Breathing -> "Calmer than the others."
-}
+private fun friendlyDescription(mode: FrictionMode): String =
+    when (mode) {
+        FrictionMode.None -> "Pause starts immediately. Use sparingly."
+        FrictionMode.WaitTimer -> "Just a small pause between impulse and action."
+        FrictionMode.MathProblem -> "Engage the prefrontal cortex briefly."
+        FrictionMode.RandomCode -> "The maximalist option."
+        FrictionMode.Breathing -> "Calmer than the others."
+    }
 
 @Composable
 private fun RadioRow(
@@ -378,10 +389,11 @@ private fun RadioRow(
     onSelect: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .selectable(selected = selected, onClick = onSelect)
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .selectable(selected = selected, onClick = onSelect)
+                .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(selected = selected, onClick = onSelect)
@@ -401,7 +413,11 @@ private fun RadioRow(
 }
 
 @Composable
-private fun LinkRow(title: String, subtitle: String, onClick: () -> Unit) {
+private fun LinkRow(
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -425,11 +441,17 @@ private fun SettingsDefaultsPreview() {
     TouchgrassTheme(darkTheme = false) {
         SettingsScreen(
             state = SettingsUiState(),
-            onSetPauseButtonVisible = {}, onSetDailyBudget = {}, onSetFrictionMode = {},
+            onSetPauseButtonVisible = {},
+            onSetDailyBudget = {},
+            onSetFrictionMode = {},
             onSetQuickPeekEnabled = {},
-            onBeginLockEnrollment = {}, onBeginLockDisenrollment = {},
-            onLockChallengeCompleted = {}, onLockChallengeCancelled = {},
-            onNavigateBack = {}, onOpenTrustDashboard = {}, onOpenAppSelection = {},
+            onBeginLockEnrollment = {},
+            onBeginLockDisenrollment = {},
+            onLockChallengeCompleted = {},
+            onLockChallengeCancelled = {},
+            onNavigateBack = {},
+            onOpenTrustDashboard = {},
+            onOpenAppSelection = {},
         )
     }
 }
@@ -439,16 +461,23 @@ private fun SettingsDefaultsPreview() {
 private fun SettingsLockOnPreview() {
     TouchgrassTheme(darkTheme = false) {
         SettingsScreen(
-            state = SettingsUiState(
-                lockEnabled = true,
-                lockEmail = "you@example.com",
-                frictionMode = FrictionMode.Breathing,
-            ),
-            onSetPauseButtonVisible = {}, onSetDailyBudget = {}, onSetFrictionMode = {},
+            state =
+                SettingsUiState(
+                    lockEnabled = true,
+                    lockEmail = "you@example.com",
+                    frictionMode = FrictionMode.Breathing,
+                ),
+            onSetPauseButtonVisible = {},
+            onSetDailyBudget = {},
+            onSetFrictionMode = {},
             onSetQuickPeekEnabled = {},
-            onBeginLockEnrollment = {}, onBeginLockDisenrollment = {},
-            onLockChallengeCompleted = {}, onLockChallengeCancelled = {},
-            onNavigateBack = {}, onOpenTrustDashboard = {}, onOpenAppSelection = {},
+            onBeginLockEnrollment = {},
+            onBeginLockDisenrollment = {},
+            onLockChallengeCompleted = {},
+            onLockChallengeCancelled = {},
+            onNavigateBack = {},
+            onOpenTrustDashboard = {},
+            onOpenAppSelection = {},
         )
     }
 }
@@ -458,18 +487,25 @@ private fun SettingsLockOnPreview() {
 private fun SettingsDarkPreview() {
     TouchgrassTheme(darkTheme = true) {
         SettingsScreen(
-            state = SettingsUiState(
-                pauseButtonVisible = false,
-                dailyBudgetMinutes = 30L,
-                frictionMode = FrictionMode.Breathing,
-                lockEnabled = true,
-                lockEmail = "you@example.com",
-            ),
-            onSetPauseButtonVisible = {}, onSetDailyBudget = {}, onSetFrictionMode = {},
+            state =
+                SettingsUiState(
+                    pauseButtonVisible = false,
+                    dailyBudgetMinutes = 30L,
+                    frictionMode = FrictionMode.Breathing,
+                    lockEnabled = true,
+                    lockEmail = "you@example.com",
+                ),
+            onSetPauseButtonVisible = {},
+            onSetDailyBudget = {},
+            onSetFrictionMode = {},
             onSetQuickPeekEnabled = {},
-            onBeginLockEnrollment = {}, onBeginLockDisenrollment = {},
-            onLockChallengeCompleted = {}, onLockChallengeCancelled = {},
-            onNavigateBack = {}, onOpenTrustDashboard = {}, onOpenAppSelection = {},
+            onBeginLockEnrollment = {},
+            onBeginLockDisenrollment = {},
+            onLockChallengeCompleted = {},
+            onLockChallengeCancelled = {},
+            onNavigateBack = {},
+            onOpenTrustDashboard = {},
+            onOpenAppSelection = {},
         )
     }
 }

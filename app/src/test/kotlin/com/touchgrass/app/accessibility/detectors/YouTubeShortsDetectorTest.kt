@@ -14,23 +14,28 @@ import org.junit.Test
  * `app/build.gradle.kts` makes the Android stubs return defaults instead of throwing.
  */
 class YouTubeShortsDetectorTest {
-
     private val detector = YouTubeShortsDetector()
 
-    private fun event(pkg: String?, className: String? = null): AccessibilityEvent = mockk {
-        every { packageName } returns pkg
-        every { this@mockk.className } returns className
-    }
-
-    private fun nodeWithShortsId(viewId: String): AccessibilityNodeInfo = mockk {
-        every { findAccessibilityNodeInfosByViewId(any()) } answers {
-            if (firstArg<String>() == viewId) listOf(mockk(relaxed = true)) else emptyList()
+    private fun event(
+        pkg: String?,
+        className: String? = null,
+    ): AccessibilityEvent =
+        mockk {
+            every { packageName } returns pkg
+            every { this@mockk.className } returns className
         }
-    }
 
-    private fun emptyNode(): AccessibilityNodeInfo = mockk {
-        every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
-    }
+    private fun nodeWithShortsId(viewId: String): AccessibilityNodeInfo =
+        mockk {
+            every { findAccessibilityNodeInfosByViewId(any()) } answers {
+                if (firstArg<String>() == viewId) listOf(mockk(relaxed = true)) else emptyList()
+            }
+        }
+
+    private fun emptyNode(): AccessibilityNodeInfo =
+        mockk {
+            every { findAccessibilityNodeInfosByViewId(any()) } returns emptyList()
+        }
 
     @Test
     fun `ignores events from other packages`() {
@@ -46,10 +51,11 @@ class YouTubeShortsDetectorTest {
 
     @Test
     fun `detects via ShortsHostFragment class name (case insensitive)`() {
-        val result = detector.detect(
-            event(YouTubeShortsDetector.PACKAGE_NAME, "com.google.android.apps.youtube.app.shortshostfragment"),
-            null,
-        )
+        val result =
+            detector.detect(
+                event(YouTubeShortsDetector.PACKAGE_NAME, "com.google.android.apps.youtube.app.shortshostfragment"),
+                null,
+            )
         assertEquals(Detection.ShortFormFeed(YouTubeShortsDetector.SURFACE), result)
     }
 
@@ -69,10 +75,11 @@ class YouTubeShortsDetectorTest {
 
     @Test
     fun `ignores generic YouTube screens with no Shorts markers`() {
-        val result = detector.detect(
-            event(YouTubeShortsDetector.PACKAGE_NAME, "com.google.android.youtube.HomeActivity"),
-            emptyNode(),
-        )
+        val result =
+            detector.detect(
+                event(YouTubeShortsDetector.PACKAGE_NAME, "com.google.android.youtube.HomeActivity"),
+                emptyNode(),
+            )
         assertEquals(Detection.NotInteresting, result)
     }
 

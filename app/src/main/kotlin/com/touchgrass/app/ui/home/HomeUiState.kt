@@ -12,8 +12,11 @@ package com.touchgrass.app.ui.home
  */
 sealed interface HomeUiState {
     data object Loading : HomeUiState
+
     data object NeedsOnboarding : HomeUiState
+
     data object AccessibilityOff : HomeUiState
+
     data class On(
         val todaysBlockCount: Int,
         val pauseButtonVisible: Boolean,

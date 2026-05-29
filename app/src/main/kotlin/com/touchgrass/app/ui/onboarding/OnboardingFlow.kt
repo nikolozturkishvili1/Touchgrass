@@ -75,32 +75,36 @@ fun OnboardingFlow(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 24.dp),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
         ) {
             StepIndicator(state.currentStep)
             Spacer(Modifier.height(24.dp))
 
             when (state.currentStep) {
                 OnboardingStep.Welcome -> WelcomeStep(onContinue = onAdvance)
-                OnboardingStep.Accessibility -> AccessibilityStep(
-                    accessibilityEnabled = state.accessibilityEnabled,
-                    onContinue = onAdvance,
-                    onOpenTrustDashboard = onOpenTrustDashboard,
-                    onNotificationsPermissionGranted = onNotificationsPermissionGranted,
-                )
-                OnboardingStep.Battery -> BatteryStep(
-                    walkthrough = state.walkthrough,
-                    oemId = state.oemId,
-                    onContinue = onAdvance,
-                )
-                OnboardingStep.AppPicker -> AppPickerStep(
-                    selectedPackages = state.selectedPackages,
-                    onTogglePackages = onTogglePackages,
-                    finishing = state.finishing,
-                    onFinish = onFinish,
-                )
+                OnboardingStep.Accessibility ->
+                    AccessibilityStep(
+                        accessibilityEnabled = state.accessibilityEnabled,
+                        onContinue = onAdvance,
+                        onOpenTrustDashboard = onOpenTrustDashboard,
+                        onNotificationsPermissionGranted = onNotificationsPermissionGranted,
+                    )
+                OnboardingStep.Battery ->
+                    BatteryStep(
+                        walkthrough = state.walkthrough,
+                        oemId = state.oemId,
+                        onContinue = onAdvance,
+                    )
+                OnboardingStep.AppPicker ->
+                    AppPickerStep(
+                        selectedPackages = state.selectedPackages,
+                        onTogglePackages = onTogglePackages,
+                        finishing = state.finishing,
+                        onFinish = onFinish,
+                    )
             }
         }
     }
@@ -117,12 +121,17 @@ private fun StepIndicator(currentStep: OnboardingStep) {
             val filled = step.ordinal <= currentStep.ordinal
             Surface(
                 shape = RoundedCornerShape(4.dp),
-                color = if (filled) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surface,
-                modifier = Modifier
-                    .height(4.dp)
-                    .weight(1f)
-                    .clip(CircleShape),
+                color =
+                    if (filled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                modifier =
+                    Modifier
+                        .height(4.dp)
+                        .weight(1f)
+                        .clip(CircleShape),
             ) { Box(Modifier.fillMaxSize()) }
         }
         Spacer(Modifier.height(0.dp))

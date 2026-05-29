@@ -20,32 +20,35 @@ import timber.log.Timber
  * not from the DI graph.
  */
 @HiltWorker
-class WatchdogWorker @AssistedInject constructor(
-    @Assisted appContext: Context,
-    @Assisted workerParams: WorkerParameters,
-    private val healthCheck: WatchdogHealthCheck,
-    private val notifier: WatchdogNotifier,
-) : CoroutineWorker(appContext, workerParams) {
+class WatchdogWorker
+    @AssistedInject
+    constructor(
+        @Assisted appContext: Context,
+        @Assisted workerParams: WorkerParameters,
+        private val healthCheck: WatchdogHealthCheck,
+        private val notifier: WatchdogNotifier,
+    ) : CoroutineWorker(appContext, workerParams) {
+        override suspend fun doWork(): Result {
+            val health =
+                runCatching { healthCheck.check() }.getOrElse {
+                    Timber.w(it, "watchdog health check failed; treating as success to avoid retry loop")
+                    return Result.success()
+                }
 
-    override suspend fun doWork(): Result {
-        val health = runCatching { healthCheck.check() }.getOrElse {
-            Timber.w(it, "watchdog health check failed; treating as success to avoid retry loop")
+            when (health) {
+                is WatchdogHealth.Healthy -> {
+                    Timber.d("watchdog: healthy")
+                    notifier.clear()
+                }
+                is WatchdogHealth.AccessibilityNotEnabled,
+                is WatchdogHealth.NeverBeaten,
+                is WatchdogHealth.Stale,
+                -> {
+                    Timber.i("watchdog: unhealthy (%s)", health)
+                    notifier.notifyUnhealthy(health)
+                }
+            }
+
             return Result.success()
         }
-
-        when (health) {
-            is WatchdogHealth.Healthy -> {
-                Timber.d("watchdog: healthy")
-                notifier.clear()
-            }
-            is WatchdogHealth.AccessibilityNotEnabled,
-            is WatchdogHealth.NeverBeaten,
-            is WatchdogHealth.Stale -> {
-                Timber.i("watchdog: unhealthy (%s)", health)
-                notifier.notifyUnhealthy(health)
-            }
-        }
-
-        return Result.success()
     }
-}
