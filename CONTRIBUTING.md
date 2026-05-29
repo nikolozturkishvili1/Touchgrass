@@ -37,7 +37,7 @@ If you're unsure whether your change fits, open an issue first. We'd rather disc
 Same as the README, abbreviated here:
 
 1. Install Android Studio (latest stable) and JDK 17.
-2. Clone the repo: `git clone https://github.com/nikolozturkishvili1/touchgrass-android.git`
+2. Clone the repo: `git clone https://github.com/nikolozturkishvili1/Touchgrass.git`
 3. Open in Android Studio. Let Gradle sync.
 4. Run `./gradlew assembleDebug` to confirm a clean build.
 5. Run on a real device — the AccessibilityService cannot be meaningfully tested in the emulator for most target apps.

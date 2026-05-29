@@ -36,7 +36,7 @@ WHAT MAKES TOUCHGRASS DIFFERENT
 
 ✓ Free. The whole app. No ads, ever. No subscription, ever. No upgrade screen nagging you. You install it, it works.
 
-✓ Open source. Audit the code yourself: github.com/nikolozturkishvili1/touchgrass-android. Licensed GPL-3.0.
+✓ Open source. Audit the code yourself: github.com/nikolozturkishvili1/Touchgrass. Licensed GPL-3.0.
 
 WHAT GETS BLOCKED
 
@@ -63,7 +63,7 @@ SETUP TAKES 3 SCREENS
 2. Disable battery optimization (we walk you through your specific phone's settings — Samsung, Xiaomi, OnePlus, Oppo, Vivo, Realme, and Huawei all included).
 3. Pick which apps to block (defaults: all of them).
 
-Open source: github.com/nikolozturkishvili1/touchgrass-android
+Open source: github.com/nikolozturkishvili1/Touchgrass
 Privacy: gettouchgrass.app/privacy
 ```
 
@@ -140,7 +140,7 @@ v0.1.0 — first public release
 • Trust Dashboard inside the app — see exactly what it can and can't see.
 • No ads. No subscription. No analytics. Open source.
 
-Found a bug? github.com/nikolozturkishvili1/touchgrass-android/issues
+Found a bug? github.com/nikolozturkishvili1/Touchgrass/issues
 ```
 
 ## Pre-submission gates

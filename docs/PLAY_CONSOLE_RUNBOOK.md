@@ -9,7 +9,7 @@
 - Listing graphics: `marketing/play-assets/icon-512.png`, `marketing/play-assets/feature-1024x500.png`
 - Phone screenshots: produced in the device session (drop into `marketing/play-assets/`)
 - Privacy policy URL: _confirmed once GitHub Pages is live_ — expected
-  `https://nikolozturkishvili1.github.io/touchgrass-android/privacy.html`
+  `https://nikolozturkishvili1.github.io/Touchgrass/privacy.html`
 - Full listing copy reference: `marketing/play-store-listing.md`
 
 > ⚠️ **Back up `keysets/touchgrass-upload.jks` + its passwords in 2+ safe places now.**
@@ -76,7 +76,7 @@ Touchgrass uses `AccessibilityService`, which Google reviews closely. Provide th
 - [ ] **Why no other API works:** "Android does not expose foreground-app UI events to third-party apps
   through any other API… No other API can perform `GLOBAL_ACTION_BACK` to intercept a feed."
 - [ ] **User disclosure:** the Trust Dashboard is shown during onboarding *before* Accessibility is requested.
-- [ ] **Open-source proof:** link the public repo `https://github.com/nikolozturkishvili1/touchgrass-android`.
+- [ ] **Open-source proof:** link the public repo `https://github.com/nikolozturkishvili1/Touchgrass`.
 - [ ] **Attach** the justification PDF (Trust Dashboard screenshot + the strict `packageNames` from
   `accessibility_service_config.xml`) — generated for you into `marketing/play-assets/`.
 

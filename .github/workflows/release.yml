@@ -1,0 +1,136 @@
+# Touchgrass release workflow.
+# Builds a SIGNED release App Bundle (.aab) for upload to Google Play and
+# attaches it to a draft GitHub Release. Triggered by pushing a version tag
+# (e.g. `git tag v0.1.0 && git push origin v0.1.0`) or run manually.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   KEYSTORE_BASE64    base64 of keysets/touchgrass-upload.jks
+#                      generate with:  base64 -w0 keysets/touchgrass-upload.jks   (Linux)
+#                                       certutil -encode keysets\touchgrass-upload.jks tmp.b64  (Windows, then strip header/footer)
+#   KEYSTORE_PASSWORD  the keystore (store) password
+#   KEY_ALIAS          the key alias inside the keystore
+#   KEY_PASSWORD       the key password
+# Optional:
+#   RESEND_API_KEY     enables real commitment-lock OTP email (else FakeEmailOtpService)
+#   RESEND_FROM_EMAIL  sender address (defaults to noreply@gettouchgrass.app)
+#
+# The keystore and keystore.properties are written at runtime and deleted
+# after the build — they are never committed. See docs/SPEC.md §8.4.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to create the GitHub Release and upload the AAB
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-aab:
+    name: Build and publish signed AAB
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # Reconstruct the signing material from secrets. Nothing is echoed; GitHub
+      # also masks registered secrets in logs. Fail loudly if the keystore secret
+      # is absent rather than silently producing an unsigned (un-uploadable) bundle.
+      - name: Reconstruct signing keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Signing secrets missing. Set KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD." >&2
+            exit 1
+          fi
+          mkdir -p keysets
+          echo "$KEYSTORE_BASE64" | base64 -d > keysets/touchgrass-upload.jks
+          {
+            echo "storeFile=keysets/touchgrass-upload.jks"
+            echo "storePassword=${KEYSTORE_PASSWORD}"
+            echo "keyAlias=${KEY_ALIAS}"
+            echo "keyPassword=${KEY_PASSWORD}"
+          } > keystore.properties
+
+      - name: Build signed release bundle
+        env:
+          # ORG_GRADLE_PROJECT_* maps to Gradle project properties without
+          # exposing values on the command line / process list.
+          ORG_GRADLE_PROJECT_RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ORG_GRADLE_PROJECT_RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+        run: ./gradlew bundleRelease --no-daemon --stacktrace
+
+      # Always wipe signing material, even if the build failed, so it never
+      # lingers in the workspace or a cache layer.
+      - name: Remove signing material
+        if: always()
+        run: rm -f keystore.properties keysets/touchgrass-upload.jks
+
+      - name: Upload AAB as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: touchgrass-release-aab
+          path: app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+          retention-days: 30
+
+      # On a version tag, publish a DRAFT release with the AAB attached for
+      # archival. Draft (not public) because an .aab is not user-installable —
+      # it goes to Play Console. Uses the runner's built-in gh CLI (no
+      # third-party action) to keep the supply chain minimal.
+      - name: Publish draft GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            app/build/outputs/bundle/release/*.aab \
+            --draft \
+            --generate-notes \
+            --title "${GITHUB_REF_NAME}"
+
+      # ---------------------------------------------------------------------
+      # TODO (not active yet): automatic upload to Google Play internal track.
+      # Enable once (1) the app exists in Play Console, (2) a service account
+      # with the "Release to testing tracks" permission is created, and (3) its
+      # JSON is stored as the PLAY_SERVICE_ACCOUNT_JSON secret. The first AAB
+      # for a brand-new app must be uploaded manually before the API will accept
+      # subsequent ones. See docs/PLAY_CONSOLE_RUNBOOK.md.
+      #
+      # - name: Upload to Play internal track
+      #   uses: r0adkll/upload-google-play@v1
+      #   with:
+      #     serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+      #     packageName: com.touchgrass.app
+      #     releaseFiles: app/build/outputs/bundle/release/*.aab
+      #     track: internal
+      # ---------------------------------------------------------------------

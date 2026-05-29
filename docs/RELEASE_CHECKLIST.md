@@ -56,7 +56,7 @@ Ordered for actually shipping. Each block is roughly one sitting of work.
 
 ## 3 · GitHub repo prep
 
-- [ ] **Create `touchgrass-android` repository.** Public.
+- [ ] **Create `Touchgrass` repository.** Public.
 - [ ] **Replace every `your-handle` placeholder** across the codebase:
   - `README.md`
   - `CONTRIBUTING.md`

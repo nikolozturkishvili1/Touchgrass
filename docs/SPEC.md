@@ -23,7 +23,7 @@ These are settled. Do not relitigate without explicit developer instruction.
 | Target Android SDK | API 35 (Android 15) |
 | Language | Kotlin 2.x |
 | UI | Jetpack Compose (Material 3) |
-| Source control & CI | **GitHub** (public repo, `touchgrass-android`) |
+| Source control & CI | **GitHub** (public repo, `Touchgrass`) |
 | License | **GPL-3.0** (protects open-source trust positioning; prevents predatory forks) |
 | Monetization | Free tier covers core blocking; **Touchgrass Plus** is one-time $9.99 for extras. No subscription. No ads. Ever. |
 | Distribution | Google Play primary; F-Droid secondary (later) |
@@ -131,7 +131,7 @@ These findings come from analysis of ~60 NoScroll reviews (Google Play, 2024–2
   - "What Touchgrass can see: which app is in the foreground and elements on screen of the apps you ask us to block"
   - "What Touchgrass cannot see: your messages, your passwords, your photos, your keyboard input"
   - "What Touchgrass sends: nothing. All data stays on your phone."
-  - "Open source: github.com/nikolozturkishvili1/touchgrass-android"
+  - "Open source: github.com/nikolozturkishvili1/Touchgrass"
 - Privacy policy written in plain English.
 - No third-party analytics SDKs in V1. Not Firebase Analytics, not Mixpanel, not Amplitude. (Crash reporting via a privacy-respecting tool like Sentry is OK if disclosed in the Trust Dashboard.)
 
@@ -467,7 +467,7 @@ Accessible from Settings → "What can Touchgrass see?". A single scrollable scr
 
 ### 8.1 Repository structure
 
-- **Repo name:** `touchgrass-android`
+- **Repo name:** `Touchgrass`
 - **Visibility:** Public (open source is a brand promise)
 - **License:** GPL-3.0 (`LICENSE` file at root)
 - **Default branch:** `main`
@@ -560,7 +560,7 @@ The developer may keep using Azure Boards for personal planning if preferred —
 >
 > Blocks: YouTube Shorts • Instagram Reels (feed, Explore, DM, Reels tab) • TikTok For You • Facebook Reels • Snapchat Spotlight • Shorts in Chrome and Samsung Internet.
 >
-> Open source: github.com/nikolozturkishvili1/touchgrass-android
+> Open source: github.com/nikolozturkishvili1/Touchgrass
 
 **ASO keywords to target:** block reels, block shorts, block tiktok, stop scrolling, doomscroll, screen time, digital wellbeing, focus app, dopamine detox, scroll blocker, no scroll, instagram reels blocker, youtube shorts blocker, brainrot
 

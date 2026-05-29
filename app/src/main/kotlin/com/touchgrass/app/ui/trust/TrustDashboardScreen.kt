@@ -179,7 +179,7 @@ private fun openUrl(context: android.content.Context, url: String) {
     }
 }
 
-private const val GITHUB_URL = "https://github.com/nikolozturkishvili1/touchgrass-android"
+private const val GITHUB_URL = "https://github.com/nikolozturkishvili1/Touchgrass"
 private const val PRIVACY_URL = "https://gettouchgrass.app/privacy"
 
 @Preview(showBackground = true, name = "Trust Dashboard — light")

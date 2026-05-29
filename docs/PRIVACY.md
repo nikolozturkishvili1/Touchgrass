@@ -90,7 +90,7 @@ It is also useful to be specific about the things we have deliberately not built
 You don't have to take our word for any of this. Touchgrass is open source under GPL-3.0. The full source code, including the accessibility configuration and every place we touch the network, lives at:
 
 ```
-github.com/nikolozturkishvili1/touchgrass-android
+github.com/nikolozturkishvili1/Touchgrass
 ```
 
 If anything in this policy is contradicted by what is in the code, the code is the bug, and we want to hear about it.

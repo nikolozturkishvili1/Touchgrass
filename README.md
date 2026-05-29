@@ -68,8 +68,8 @@ You'll need a recent Android Studio and JDK 17. Tested with Android Studio Ladyb
 1. **Clone the repo:**
 
    ```bash
-   git clone https://github.com/nikolozturkishvili1/touchgrass-android.git
-   cd touchgrass-android
+   git clone https://github.com/nikolozturkishvili1/Touchgrass.git
+   cd Touchgrass
    ```
 
 2. **Install prerequisites:**
@@ -78,7 +78,7 @@ You'll need a recent Android Studio and JDK 17. Tested with Android Studio Ladyb
    - Android SDK Platform 35 and Build-Tools 35.x. Android Studio will offer to install these on first sync.
 
 3. **Open the project:**
-   - Android Studio: *File → Open* and point at the cloned `touchgrass-android` directory.
+   - Android Studio: *File → Open* and point at the cloned `Touchgrass` directory.
    - Let Gradle sync. The first sync downloads dependencies and may take a few minutes.
 
 4. **Build a debug APK:**
