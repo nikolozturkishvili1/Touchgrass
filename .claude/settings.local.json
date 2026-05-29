@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gradle --version)",
+      "Bash(java --version)",
+      "Bash(grep -E \"\\\\.\\(kt|xml\\)$\")",
+      "Bash(xargs grep -l \"sealed.*Destination\\\\|object.*Destinations\\\\|enum.*Screen\")",
+      "Bash(xargs grep -l \"NavGraph\\\\|Destinations\\\\|sealed class.*Screen\")",
+      "Skill(superpowers:systematic-debugging)",
+      "Bash(cd /d D:\\\\My_Projects\\\\Touchgrass)",
+      "Bash(gradlew.bat :app:testDebugUnitTest --tests \"com.touchgrass.app.accessibility.detectors.FacebookReelsDetectorTest\" --console=plain)",
+      "PowerShell(.\\\\gradlew.bat :app:testDebugUnitTest --tests \"com.touchgrass.app.accessibility.detectors.FacebookReelsDetectorTest\" --console=plain)",
+      "PowerShell(Get-Command *)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(& \"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\\\\bin\\\\keytool.exe\" -list -keystore \"D:\\\\My_Projects\\\\Touchgrass\\\\keysets\\\\keysets\" -storepass \"\" 2>&1 | Select-Object -First 20)",
+      "PowerShell(& \"D:\\\\My_Projects\\\\Touchgrass\\\\gradlew.bat\" -p \"D:\\\\My_Projects\\\\Touchgrass\" help --no-daemon -q 2>&1 | Select-Object -Last 30)",
+      "PowerShell(& \"C:\\\\Users\\\\nikod\\\\.gradle\\\\wrapper\\\\dists\\\\gradle-8.10.2-bin\\\\a04bxjujx95o3nb99gddekhwo\\\\gradle-8.10.2\\\\bin\\\\gradle.bat\" -p \"D:\\\\My_Projects\\\\Touchgrass\" help --no-daemon -q 2>&1 | Select-Object -Last 40)",
+      "PowerShell($env:JAVA_HOME = \"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\"; & \"C:\\\\Users\\\\nikod\\\\.gradle\\\\wrapper\\\\dists\\\\gradle-8.10.2-bin\\\\a04bxjujx95o3nb99gddekhwo\\\\gradle-8.10.2\\\\bin\\\\gradle.bat\" -p \"D:\\\\My_Projects\\\\Touchgrass\" help --no-daemon -q 2>&1 | Select-Object -Last 40)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "github"
+  ]
+}

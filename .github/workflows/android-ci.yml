@@ -1,0 +1,107 @@
+# Touchgrass Android CI
+# Runs lint, static analysis, unit tests, and an assembleDebug build on every
+# PR targeting `main` and every push to `main`. See docs/SPEC.md §8.3.
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel in-flight runs for the same ref when a new commit is pushed so
+# superseded PR updates don't queue behind stale builds.
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least-privilege default token. PR runs from forks won't get write access.
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  build-and-test:
+    name: Build, lint, and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history so tools that inspect git (e.g. version derivation) work.
+          fetch-depth: 0
+
+      - name: Set up JDK 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Verifies gradle-wrapper.jar hasn't been tampered with by comparing
+      # against Gradle's published checksums. Cheap supply-chain defense.
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      # Configures the Gradle build cache and dependency cache. Reads/writes
+      # from main; PRs get read-only cache hits (handled by the action).
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      # ktlint + Detekt (spec §11.2). Run first so style/static-analysis
+      # failures fail fast before the longer test/build steps.
+      - name: Lint and static analysis
+        run: ./gradlew ktlintCheck detekt --no-daemon --stacktrace
+
+      - name: Unit tests (debug)
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
+
+      - name: Assemble debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      # Surface JUnit results as inline annotations on the PR / commit.
+      # Runs even on failure so red tests show up in the checks UI.
+      - name: Publish unit test report
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: 'app/build/test-results/testDebugUnitTest/TEST-*.xml'
+          check_name: Unit test results
+          fail_on_failure: true
+          require_tests: false
+
+      # Only publish the debug APK on pushes to main — avoids leaking
+      # PR-built binaries and keeps artifact storage bounded.
+      - name: Upload debug APK
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: touchgrass-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 7
+          if-no-files-found: error
+
+      # Test results always uploaded so failures are debuggable from the run page.
+      - name: Upload unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/reports/tests/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      # Lint / Detekt HTML reports only on failure — saves storage on green runs.
+      - name: Upload lint and Detekt reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lint-reports
+          path: app/build/reports/
+          retention-days: 7
+          if-no-files-found: ignore

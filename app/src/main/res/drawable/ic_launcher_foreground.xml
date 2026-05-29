@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Placeholder foreground: a single blade of grass, per the icon concept in spec §5.3.
+    This is a quick vector for build purposes. Replace with the final designed asset before
+    Play Store submission (Week 7 polish).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Safe zone for adaptive icons is the central 66dp circle. Keep the blade inside it. -->
+    <path
+        android:fillColor="#C9D5A4"
+        android:pathData="M54,80 C53,72 51,62 49,52 C47,42 44,32 41,24 C44,32 49,42 52,52 C54,62 55,72 54,80 Z" />
+    <path
+        android:fillColor="#C9D5A4"
+        android:pathData="M54,80 C55,72 57,62 59,52 C61,42 64,32 67,24 C64,32 59,42 56,52 C54,62 53,72 54,80 Z" />
+    <path
+        android:fillColor="#C9D5A4"
+        android:pathData="M54,82 C53,76 52,70 51,66 C53,68 55,68 57,66 C56,70 55,76 54,82 Z" />
+</vector>

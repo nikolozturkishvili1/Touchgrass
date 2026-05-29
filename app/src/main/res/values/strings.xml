@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Touchgrass</string>
+
+    <!-- Accessibility service strings (shown in system Settings → Accessibility list) -->
+    <string name="accessibility_service_label">Touchgrass</string>
+    <string name="accessibility_service_summary">Blocks Reels, Shorts, and infinite-scroll feeds.</string>
+    <string name="accessibility_service_description">
+Touchgrass uses the Accessibility service for one thing: to detect when you open a short-form feed (Reels, Shorts, TikTok, Spotlight) in the apps you ask it to block, and to send you back out.
+
+What Touchgrass can see:
+• Which app is open, and only when that app is one you chose to block.
+• Screen elements within those apps, just long enough to detect a feed.
+
+What Touchgrass cannot see:
+• Your messages, banking apps, keyboard input, photos, or any app you didn\'t add.
+• Nothing leaves your phone.
+
+You can review and change which apps Touchgrass watches at any time, from inside the app.
+    </string>
+
+    <!-- Foreground service notification -->
+    <string name="foreground_notification_channel_name">Touchgrass is on</string>
+    <string name="foreground_notification_channel_description">Shows while Touchgrass is actively blocking. Required by Android.</string>
+    <string name="foreground_notification_title">Touchgrass is on</string>
+    <string name="foreground_notification_text">Reels and shorts are blocked.</string>
+    <string name="foreground_notification_title_paused">Touchgrass is paused</string>
+    <string name="foreground_notification_text_paused">ends in</string>
+
+    <!-- Watchdog alert notification -->
+    <string name="watchdog_notification_channel_name">Service health alerts</string>
+    <string name="watchdog_notification_channel_description">Tells you if Touchgrass stops working so you can re-enable it.</string>
+    <string name="watchdog_notification_title">Touchgrass stopped working</string>
+    <string name="watchdog_notification_text">Tap to fix.</string>
+</resources>

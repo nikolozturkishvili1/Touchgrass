@@ -1,0 +1,49 @@
+{
+  "oemId": "huawei",
+  "displayName": "Huawei",
+  "manufacturerMatches": ["HUAWEI", "Huawei"],
+  "brandMatches": ["huawei"],
+  "steps": [
+    {
+      "title": "Open App launch (Launch manager) and turn off Manage automatically for Touchgrass",
+      "description": "REQUIRED. Open Settings, tap 'Battery', then tap 'App launch' (called 'Launch manager' on some EMUI 12 / 13 builds, and 'Startup manager' on older EMUI 8 - 10 devices; if you cannot find it, open Settings and search 'App launch'). Scroll to 'Touchgrass'. By default EMUI shows the row with a single switch labelled 'Manage automatically' turned ON - tap that switch to turn it OFF. A confirmation sheet will appear with three new sub-toggles. This is the single most important screen on any Huawei phone: 'Manage automatically' is what EMUI's PowerGenie service uses to silently kill background apps, and it overrides every other battery setting on the device.",
+      "screenshot": "oem_huawei_step1"
+    },
+    {
+      "title": "Enable Auto-launch, Secondary launch, and Run in background",
+      "description": "REQUIRED. In the confirmation sheet that appeared after disabling 'Manage automatically', turn ON all three toggles: 'Auto-launch' (lets Touchgrass start itself after a reboot or when EMUI has killed it), 'Secondary launch' (lets Touchgrass be started by other apps and by the Android AlarmManager), and 'Run in background' (lets Touchgrass keep running once started). Tap 'OK' to confirm. Leaving any of the three off will break a different part of the scheduling pipeline - 'Run in background' is the one most users miss, and without it your timer service is killed within about 60 seconds of the screen turning off.",
+      "screenshot": "oem_huawei_step2"
+    },
+    {
+      "title": "Allow background activity in Apps settings",
+      "description": "REQUIRED. Go back to Settings, tap 'Apps' (or 'Apps & services' on EMUI 11+), tap 'Apps' again if a sub-menu appears, then find and tap 'Touchgrass'. Tap 'Battery'. Toggle 'Allow background activity' ON. On older EMUI 8 / 9 builds the equivalent toggles are labelled 'Power-intensive prompt' (turn OFF) and 'Keep running after screen off' (turn ON) - set them that way if you see them instead. This is a separate kill-switch from the Launch manager screen; EMUI checks both.",
+      "screenshot": "oem_huawei_step3"
+    },
+    {
+      "title": "Add Touchgrass to Protected apps in Phone Manager",
+      "description": "RECOMMENDED. Open the 'Optimizer' app (called 'Phone Manager' on EMUI 9 and earlier; on HarmonyOS-derived EMUI builds it may be hidden under Settings > Battery > More battery settings). Tap the gear / settings icon, then look for 'Protected apps' or, on EMUI 10+, 'Power-intensive apps' / 'Launch'. Find 'Touchgrass' and make sure it is toggled ON / marked as Protected. This is a legacy whitelist that EMUI's older battery daemon still consults; on devices where it exists, leaving it off will undo the Launch manager changes after a reboot.",
+      "screenshot": "oem_huawei_step4"
+    },
+    {
+      "title": "Turn on Keep connected when device sleeps",
+      "description": "RECOMMENDED. Return to Settings > Battery > 'More battery settings' (sometimes 'Other battery settings'). Toggle 'Stay connected when device sleeps' (also called 'Keep connected when device sleeps' or 'Keep connected to Wi-Fi during sleep') ON. Without this, EMUI puts the radio to sleep aggressively after the screen turns off, which can delay Touchgrass's alarms by 5 - 15 minutes and breaks lockouts that rely on a sync. Not every EMUI version exposes this toggle - skip this step if you don't see it.",
+      "screenshot": "oem_huawei_step5"
+    },
+    {
+      "title": "Lock Touchgrass in Recent apps",
+      "description": "RECOMMENDED. Open Touchgrass once so it appears in Recents, then open the Recent apps view (swipe up from the bottom and hold, or tap the recents button on the three-button nav bar). Find the Touchgrass card, swipe DOWN on it (do not swipe up - up dismisses the card on EMUI). A small padlock icon will appear at the top of the card. On some EMUI 12 builds you long-press the card and tap the padlock instead. A closed padlock means EMUI will not clear Touchgrass when you tap 'Clear all' and will kill it last under memory pressure - this is the single cheapest way to make the other settings stick across days.",
+      "screenshot": "oem_huawei_step6"
+    },
+    {
+      "title": "Reboot and verify the settings stuck",
+      "description": "Restart your phone so EMUI commits the new whitelist (PowerGenie reads it once at boot). After the reboot, reopen Touchgrass, then return to Settings > Battery > App launch and confirm 'Touchgrass' is still shown as 'Manage manually' with all three sub-toggles green. EMUI is known to silently revert these toggles after major system updates and occasionally after a 'phone cleanup' inside Optimizer - if Touchgrass stops blocking reliably, this is the first screen to check.",
+      "screenshot": "oem_huawei_step7"
+    }
+  ],
+  "deepLinkIntent": "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+  "sources": [
+    "https://dontkillmyapp.com/huawei",
+    "https://consumer.huawei.com/en/support/content/en-us00709938/",
+    "https://help.safelagoon.com/en/articles/3203458-how-to-turn-off-battery-optimization-on-huawei-devices"
+  ]
+}

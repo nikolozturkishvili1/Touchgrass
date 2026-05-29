@@ -1,0 +1,65 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.kotlin/
+
+# Build outputs
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+
+# Generated files
+bin/
+gen/
+captures/
+
+# Native
+.cxx/
+.externalNativeBuild/
+
+# Logs
+*.log
+
+# Keystore & signing (NEVER commit)
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+keysets/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Reports
+/reports/
+**/build/reports/
+
+# Lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Sentry (if added later)
+.sentry-native/
+sentry.properties
+
+# Local env
+.env
+.env.local
+
+# Claude Code MCP config (kept local — never put a token in this file)
+.mcp.json

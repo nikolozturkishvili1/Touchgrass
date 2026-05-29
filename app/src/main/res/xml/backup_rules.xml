@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    No automatic backups for V1. All data is on-device per the trust commitment (spec §3.1.C).
+    Once Plus is wired up, consider opting in stats DB for cloud backup; never user identifiers.
+-->
+<full-backup-content>
+    <exclude domain="root" path="." />
+    <exclude domain="file" path="." />
+    <exclude domain="database" path="." />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

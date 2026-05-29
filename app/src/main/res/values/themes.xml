@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Minimal XML theme. Almost all styling is done in Compose (spec §11.1).
+    This theme exists only as the splash/launcher theme and a Compose-compatible base.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Touchgrass" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.Touchgrass.Splash" parent="Theme.Touchgrass">
+        <item name="android:windowBackground">@color/touchgrass_bg_light</item>
+        <item name="android:statusBarColor" tools:targetApi="21">@color/touchgrass_bg_light</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
+    </style>
+</resources>

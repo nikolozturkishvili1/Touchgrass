@@ -1,0 +1,61 @@
+{
+  "oemId": "xiaomi",
+  "displayName": "Xiaomi / Redmi / POCO",
+  "manufacturerMatches": ["Xiaomi"],
+  "brandMatches": ["xiaomi", "redmi", "poco"],
+  "steps": [
+    {
+      "title": "Open the Security app",
+      "description": "REQUIRED. Find the 'Security' app in your app drawer (it has a blue shield icon and comes preinstalled on every Xiaomi, Redmi and POCO phone). Tap to open it. On HyperOS 2 it may be called 'Mi Security' or just 'Security'. This is where Xiaomi hides almost every background-app control.",
+      "screenshot": "oem_xiaomi_step1"
+    },
+    {
+      "title": "Open Battery settings",
+      "description": "REQUIRED. Inside the Security app, tap the 'Battery' tile (battery icon, usually top row). If you don't see it, scroll down or pull down the search bar and type 'Battery'. Do not use Settings > Battery for this step - the Security app version exposes the per-app whitelist that Settings does not.",
+      "screenshot": "oem_xiaomi_step2"
+    },
+    {
+      "title": "Open App battery saver",
+      "description": "REQUIRED. On the Battery screen tap the gear icon in the top-right corner, then tap 'App battery saver' (on some HyperOS 2 builds this is shown directly as a row labelled 'App battery saver' without the gear). This opens the list of every installed app and its current background restriction level.",
+      "screenshot": "oem_xiaomi_step3"
+    },
+    {
+      "title": "Set Touchgrass to No restrictions",
+      "description": "REQUIRED. Scroll the list and tap 'Touchgrass'. Choose 'No restrictions'. The default 'Battery saver' setting will let MIUI kill the timer service whenever the screen turns off, which is the single biggest cause of unreliable lockouts on Xiaomi devices. 'No restrictions' is the only option that actually works.",
+      "screenshot": "oem_xiaomi_step4"
+    },
+    {
+      "title": "Go back and open Permissions",
+      "description": "REQUIRED. Press back until you are at the Security app home screen, then tap the 'Permissions' tile (lock icon). This is where MIUI keeps the Autostart whitelist - a second, separate kill-switch independent of the battery setting you just changed.",
+      "screenshot": "oem_xiaomi_step5"
+    },
+    {
+      "title": "Open Autostart and enable Touchgrass",
+      "description": "REQUIRED. Tap 'Autostart'. Find 'Touchgrass' in the list and toggle it ON. Confirm the warning dialog if one appears. Without this, MIUI will block Touchgrass from launching itself after a reboot or after the system has reclaimed its memory, and your block schedules will silently stop firing.",
+      "screenshot": "oem_xiaomi_step6"
+    },
+    {
+      "title": "Lock Touchgrass in Recents",
+      "description": "RECOMMENDED. Open the Recents view (swipe up from the bottom and hold, or tap the square nav button). Find the Touchgrass card and either pull it slightly downward, or long-press the app icon at the top of the card, then tap the padlock icon. A small lock badge will appear on the card. Locked apps survive 'Clear all' and are killed last under memory pressure.",
+      "screenshot": "oem_xiaomi_step7"
+    },
+    {
+      "title": "Turn off MIUI Optimization (Redmi/POCO with HyperOS 2)",
+      "description": "RECOMMENDED. Open Settings > About phone, tap 'All specs', then tap the 'MIUI version' or 'HyperOS version' row 7 times to enable Developer options. Go back to Settings > Additional settings > Developer options and turn OFF 'MIUI optimization' (or 'Memory optimization' on HyperOS 2). This stops the most aggressive cgroup-based killer. Your phone will reboot. Skip this step if you are uncomfortable with developer options - the previous steps are usually enough.",
+      "screenshot": "oem_xiaomi_step8"
+    },
+    {
+      "title": "Disable 'Pause app activity if unused' for Touchgrass",
+      "description": "RECOMMENDED. Open Settings > Apps > Manage apps > Touchgrass. Scroll to the bottom and turn OFF 'Pause app activity if unused' (also called 'Remove permissions if app isn't used'). If this is left on, MIUI will revoke Touchgrass's permissions and stop its services after about 3 months of light use, breaking enforcement until you reopen the app.",
+      "screenshot": "oem_xiaomi_step9"
+    }
+  ],
+  "deepLinkIntent": "miui.intent.action.POWER_HIDE_MODE_APP_LIST",
+  "sources": [
+    "https://adguard.com/kb/adguard-for-android/solving-problems/background-work/",
+    "https://drfone.wondershare.com/android-xiaomi/turn-off-battery-draining-background-apps-xiaomi.html",
+    "https://www.techietut.com/2024/11/hyperos-how-to-prevent-apps.html",
+    "https://xiaomi.eu/community/threads/disable-battery-optimization-for-an-app-permanently.74932/",
+    "https://dontkillmyapp.com/xiaomi"
+  ]
+}

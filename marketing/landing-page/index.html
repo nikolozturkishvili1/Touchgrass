@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Touchgrass — block reels, shorts &amp; TikTok. For real this time.</title>
+<meta name="description" content="Touchgrass blocks short-form feeds in Instagram, TikTok, YouTube, Facebook and Snapchat. Reliable, private, no ads, no subscription, open source." />
+<meta property="og:title" content="Touchgrass — block reels &amp; shorts" />
+<meta property="og:description" content="The reel blocker that actually keeps working. No ads. No subscription. Open source." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://gettouchgrass.app" />
+<meta property="og:image" content="https://gettouchgrass.app/og.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<style>
+:root {
+  --bg: #FAF8F3;
+  --surface: #F4F1E9;
+  --primary: #3E5E3A;
+  --accent: #C9D5A4;
+  --danger: #A24E3E;
+  --text: #1F231C;
+  --text-muted: #5C645A;
+  --radius: 14px;
+  --content-max: 720px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1C18;
+    --surface: #24261F;
+    --primary: #C9D5A4;
+    --accent: #3E5E3A;
+    --text: #E9EBE2;
+    --text-muted: #9CA298;
+  }
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+main { max-width: var(--content-max); margin: 0 auto; padding: 56px 24px 80px; }
+header { padding: 64px 0 24px; }
+h1 {
+  font-size: clamp(40px, 7vw, 56px);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+h2 {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 56px 0 16px;
+}
+p { margin: 0 0 16px; color: var(--text); }
+p.lead { font-size: 19px; color: var(--text); margin-bottom: 24px; }
+p.muted { color: var(--text-muted); }
+a { color: var(--primary); }
+a:hover { text-decoration: none; }
+
+.brand {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--primary);
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.hero .blade {
+  font-size: 44px;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.hero h1 strong { color: var(--primary); font-weight: 600; }
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+.cta {
+  display: inline-block;
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  transition: transform 150ms ease;
+}
+.cta:hover { transform: translateY(-1px); }
+.cta-primary { background: var(--primary); color: var(--bg); }
+.cta-secondary { background: var(--surface); color: var(--text); }
+
+.signup {
+  margin-top: 32px;
+  padding: 20px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.signup label { display: block; margin-bottom: 8px; font-weight: 600; }
+.signup input[type="email"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--text-muted);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  font-family: inherit;
+}
+.signup form { display: flex; gap: 8px; flex-wrap: wrap; }
+.signup form input { flex: 1; min-width: 220px; }
+.signup form button {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+.signup .note { font-size: 14px; color: var(--text-muted); margin: 12px 0 0; }
+
+.features {
+  display: grid;
+  gap: 24px;
+  margin-top: 16px;
+}
+@media (min-width: 640px) { .features { grid-template-columns: 1fr 1fr; } }
+.feature {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+.feature h3 {
+  font-size: 18px;
+  margin: 0 0 8px;
+  color: var(--text);
+}
+.feature p {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.what-list {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+}
+.what-list ul { margin: 0; padding-left: 20px; }
+.what-list li { margin: 6px 0; color: var(--text); }
+
+.faq dt { font-weight: 600; margin-top: 16px; }
+.faq dd { margin: 4px 0 0; color: var(--text-muted); }
+
+footer {
+  border-top: 1px solid var(--text-muted);
+  margin-top: 64px;
+  padding-top: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+footer a { color: var(--text-muted); }
+.ios-note {
+  margin-top: 40px;
+  padding: 16px 18px;
+  border: 1px dashed var(--text-muted);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 15px;
+}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="blade" aria-hidden="true">🌱</div>
+  <p class="brand">Touchgrass</p>
+  <h1>The <strong>reel blocker</strong> that actually keeps working.</h1>
+  <p class="lead">Blocks Reels, Shorts, TikTok, and Spotlight on Android. Leaves messages, posts, and the rest of those apps alone.</p>
+
+  <div class="cta-row">
+    <!-- Replace with Play Store badge link when published. -->
+    <a class="cta cta-primary" href="#waitlist">Get notified at launch</a>
+    <a class="cta cta-secondary" href="https://github.com/nikolozturkishvili1/touchgrass-android" target="_blank" rel="noopener">View source</a>
+  </div>
+
+  <p class="muted" style="margin-top:16px;font-size:15px;">No ads. No subscription. No analytics. Open source.</p>
+</header>
+
+<section id="waitlist" class="signup">
+  <label for="email">Email me when it ships.</label>
+  <!--
+    Replace `action=` with your form endpoint (Buttondown / ConvertKit / Resend / Mailchimp).
+    Until then this is decorative — submissions go nowhere.
+  -->
+  <form action="https://example.com/your-list-endpoint" method="post">
+    <input type="email" id="email" name="email" placeholder="you@example.com" required />
+    <button type="submit">Notify me</button>
+  </form>
+  <p class="note">One email when the Play Store listing goes live. That's it. We never send marketing.</p>
+</section>
+
+<h2>What it blocks</h2>
+<div class="what-list">
+  <ul>
+    <li>YouTube Shorts</li>
+    <li>Instagram Reels — feed, Explore, Reels tab, DM-shared</li>
+    <li>TikTok For You and Following</li>
+    <li>Facebook Reels (the full-screen viewer)</li>
+    <li>Snapchat Spotlight</li>
+    <li>YouTube Shorts in Chrome</li>
+    <li>YouTube Shorts in Samsung Internet</li>
+  </ul>
+</div>
+
+<h2>Why it's different</h2>
+<div class="features">
+  <div class="feature">
+    <h3>It actually keeps working</h3>
+    <p>Touchgrass has a watchdog that catches itself if it ever stops, plus per-phone battery setup for Samsung, Xiaomi, OnePlus, Oppo, Vivo, Realme, and Huawei.</p>
+  </div>
+  <div class="feature">
+    <h3>Honest about privacy</h3>
+    <p>Open the Trust Dashboard inside the app. It tells you in plain English exactly what Touchgrass can and cannot see — and the source code on GitHub proves it.</p>
+  </div>
+  <div class="feature">
+    <h3>No ads. Ever.</h3>
+    <p>Not now, not when we get bigger, not as a "premium tier removes ads" trick. Touchgrass will never show you an ad.</p>
+  </div>
+  <div class="feature">
+    <h3>Free. The whole app.</h3>
+    <p>Every feature is included. No upgrade prompts. No subscription. If a paid tier ever comes back it'll be optional, one-time, and clearly worth it.</p>
+  </div>
+</div>
+
+<h2>How it works in 30 seconds</h2>
+<ol style="padding-left:20px;">
+  <li><strong>One permission.</strong> Touchgrass uses Android's Accessibility service for one thing: noticing when you open a short-form feed inside an app you put on the block list.</li>
+  <li><strong>Detect the feed.</strong> When it sees one, it presses Back. You're out before the algorithm gets a hold of you.</li>
+  <li><strong>Stay out.</strong> A debounce stops spam-tap re-entries. A watchdog makes sure the service stays alive across reboots, OEM background-killers, and updates.</li>
+</ol>
+
+<h2>Questions people ask</h2>
+<dl class="faq">
+  <dt>Does Touchgrass read my messages?</dt>
+  <dd>No. The Accessibility service is scoped strictly to the apps you put on the block list. Even within those, Touchgrass only reads UI elements long enough to detect a feed. You can audit the configuration in the source code.</dd>
+
+  <dt>Does anything leave my phone?</dt>
+  <dd>Only one thing, and only if you turn it on: the commitment lock sends a one-time code to your own email via a transactional-email service. Your email address is stored on your phone only. There's no Touchgrass server that knows you exist.</dd>
+
+  <dt>Why Android only?</dt>
+  <dd>iOS doesn't have an equivalent of Android's Accessibility API for this purpose. iOS Screen Time + Family Controls can do some of it. An iOS V2 is on the roadmap.</dd>
+
+  <dt>Is it really free?</dt>
+  <dd>Yes. No "premium" tier at launch. No tier-locked features. If something changes later, anyone who installed during the free era keeps everything free.</dd>
+
+  <dt>What happens if Instagram changes its UI?</dt>
+  <dd>The detector breaks until we ship an update. Because Touchgrass is open source, you can also fix it yourself — see the contributing guide on GitHub.</dd>
+</dl>
+
+<div class="ios-note">
+  <strong>iOS user?</strong> We're planning an iOS version (V2). It will use Apple's Family Controls + a browser extension. <a href="#waitlist">Join the list</a> and we'll tell you when it's ready.
+</div>
+
+<footer>
+  <a href="https://github.com/nikolozturkishvili1/touchgrass-android" target="_blank" rel="noopener">GitHub</a>
+  <a href="/privacy.html">Privacy</a>
+  <a href="https://github.com/nikolozturkishvili1/touchgrass-android/blob/main/CODE_OF_CONDUCT.md" target="_blank" rel="noopener">Code of conduct</a>
+  <a href="https://github.com/nikolozturkishvili1/touchgrass-android/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0</a>
+  <span style="margin-left:auto;">© Touchgrass.</span>
+</footer>
+</main>
+</body>
+</html>

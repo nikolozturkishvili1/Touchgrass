@@ -1,0 +1,79 @@
+# Detekt configuration for Touchgrass.
+# This file overlays the defaults (buildUponDefaultConfig = true in app/build.gradle.kts).
+# Keep rules pragmatic — friction-free linting helps a solo dev ship.
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 80
+  LongParameterList:
+    active: true
+    functionThreshold: 8
+    constructorThreshold: 10
+  TooManyFunctions:
+    active: false
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 18
+
+style:
+  active: true
+  MagicNumber:
+    active: false  # too noisy in Compose layouts
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludeCommentStatements: true
+  ReturnCount:
+    active: true
+    max: 4
+  WildcardImport:
+    active: true
+    excludeImports:
+      - 'java.util.*'
+  ForbiddenComment:
+    active: true
+    comments:
+      - reason: 'TODO must reference a GitHub issue per spec §11.2'
+        value: 'TODO:(?! #\d+)'
+      - reason: 'No FIXME in main'
+        value: 'FIXME:'
+
+empty-blocks:
+  active: true
+
+naming:
+  active: true
+  FunctionNaming:
+    active: true
+    ignoreAnnotated: ['Composable']
+  TopLevelPropertyNaming:
+    active: true
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+
+exceptions:
+  active: true
+  TooGenericExceptionCaught:
+    active: true
+  SwallowedException:
+    active: true
+
+formatting:
+  active: false  # ktlint owns formatting
+
+comments:
+  active: true
+  UndocumentedPublicClass:
+    active: false
+  UndocumentedPublicFunction:
+    active: false

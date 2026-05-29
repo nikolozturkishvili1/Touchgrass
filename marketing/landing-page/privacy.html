@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Privacy — Touchgrass</title>
+<meta name="description" content="Plain-English privacy policy for Touchgrass. Nothing leaves your phone unless you opt in to the commitment lock." />
+
+<style>
+:root {
+  --bg: #FAF8F3;
+  --surface: #F4F1E9;
+  --primary: #3E5E3A;
+  --text: #1F231C;
+  --text-muted: #5C645A;
+  --content-max: 680px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1C18;
+    --surface: #24261F;
+    --primary: #C9D5A4;
+    --text: #E9EBE2;
+    --text-muted: #9CA298;
+  }
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, "Helvetica Neue", sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+main { max-width: var(--content-max); margin: 0 auto; padding: 48px 24px 80px; }
+h1 {
+  font-size: 40px;
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+}
+h2 {
+  font-size: 22px;
+  line-height: 1.25;
+  font-weight: 600;
+  margin: 40px 0 12px;
+}
+p { margin: 0 0 12px; }
+p.muted { color: var(--text-muted); font-size: 15px; }
+ul { padding-left: 20px; margin: 0 0 12px; }
+li { margin: 4px 0; }
+a { color: var(--primary); }
+.callout {
+  background: var(--surface);
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin: 16px 0;
+}
+.brand { color: var(--primary); font-style: italic; font-family: ui-serif, Georgia, serif; font-size: 18px; }
+footer { margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--text-muted); font-size: 14px; color: var(--text-muted); }
+footer a { color: var(--text-muted); }
+</style>
+</head>
+<body>
+<main>
+<p class="brand"><a href="/">Touchgrass</a></p>
+<h1>Privacy</h1>
+<p class="muted">Effective 2026-05-12. This is the full policy in plain English. There is no longer, more legalistic version — what's here is what we do.</p>
+
+<div class="callout">
+  <strong>The short version.</strong> Touchgrass stores everything on your phone. Nothing leaves it, with two exceptions you can control: a one-time code emailed to you if you enable the commitment lock, and Google Play Billing if a paid tier returns later (V1 is free). No ads. No tracking. No analytics SDKs.
+</div>
+
+<h2>What Touchgrass can see</h2>
+<ul>
+  <li>Which app is currently in the foreground — but only when it's one of the apps you put on the block list (YouTube, Instagram, TikTok, Facebook, Snapchat, Chrome, Samsung Internet).</li>
+  <li>UI elements within those apps, just long enough to detect that you've opened a short-form feed.</li>
+  <li>The fact that you opened the Touchgrass app itself.</li>
+</ul>
+
+<h2>What Touchgrass cannot see</h2>
+<ul>
+  <li>Your messages, emails, banking apps, photos, or keyboard input.</li>
+  <li>Any app not on your block list. Even though Android's Accessibility API could technically let us, the configuration explicitly scopes us to the supported apps only. See <code>accessibility_service_config.xml</code> in the source.</li>
+  <li>Your location, contacts, calendar, microphone, or camera.</li>
+</ul>
+
+<h2>What Touchgrass stores</h2>
+<ul>
+  <li>Your settings (which apps to block, daily pause budget, friction mode, commitment-lock preferences).</li>
+  <li>Block counts and timestamps for the stats screen.</li>
+  <li>Your email address — only if you turn on the commitment lock.</li>
+</ul>
+<p>All of this is on your phone. Nothing is uploaded.</p>
+
+<h2>When Touchgrass uses the internet</h2>
+<ul>
+  <li><strong>Commitment lock.</strong> If you turn it on, we send a 6-digit code to your email via Resend (resend.com). Resend sees the recipient address and the email body (which contains the code). Nothing else. The code expires in 5 minutes.</li>
+  <li><strong>Future purchases (not in V1).</strong> If a paid tier returns later, Google Play Billing handles the transaction. We never see your payment info.</li>
+  <li>That's it. No analytics, no tracking SDKs, no crash reporter without an explicit opt-in disclosed here.</li>
+</ul>
+
+<h2>What we don't do</h2>
+<ul>
+  <li>We don't use analytics SDKs. Not Firebase Analytics, not Mixpanel, not Amplitude.</li>
+  <li>We don't show ads. Ever.</li>
+  <li>We don't sell data.</li>
+  <li>We don't have user accounts. The email for commitment lock is stored locally; you can change or remove it any time.</li>
+  <li>We don't have a server that knows you exist.</li>
+</ul>
+
+<h2>Children's privacy</h2>
+<p>Touchgrass is not directed at children under 13. We don't knowingly collect anything from anyone.</p>
+
+<h2>Verify for yourself</h2>
+<p>The whole app is open source under GPL-3.0. <a href="https://github.com/nikolozturkishvili1/touchgrass-android" target="_blank" rel="noopener">github.com/nikolozturkishvili1/touchgrass-android</a> — start with <code>app/src/main/res/xml/accessibility_service_config.xml</code> for the strict scope, and <code>lock/ResendEmailOtpService.kt</code> for the only network call we make.</p>
+
+<h2>Changes to this policy</h2>
+<p>If anything here changes materially, we'll notify you inside the app before the new policy takes effect.</p>
+
+<h2>Contact</h2>
+<p>Privacy questions: <a href="mailto:privacy@gettouchgrass.app">privacy@gettouchgrass.app</a>.</p>
+
+<footer>
+  <a href="/">Home</a> · <a href="https://github.com/nikolozturkishvili1/touchgrass-android" target="_blank" rel="noopener">Source</a> · © Touchgrass.
+</footer>
+</main>
+</body>
+</html>

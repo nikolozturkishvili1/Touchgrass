@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AccessibilityService configuration (spec §4.4).
+
+    Trust commitment: packageNames is STRICTLY SCOPED to the apps Touchgrass blocks.
+    Touchgrass never observes other apps. This backs the Trust Dashboard claim that we cannot
+    see your messages, banking, keyboard, etc. (spec §3.1.C). Do not broaden this list silently.
+
+    Day-1 targets (spec §3.1.A):
+      - YouTube Shorts
+      - Instagram Reels (feed, Explore, Reels tab, DM)
+      - TikTok For You
+      - Facebook Reels
+      - Snapchat Spotlight
+      - YouTube Shorts on Chrome
+      - YouTube Shorts on Samsung Internet
+-->
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled|typeViewFocused"
+    android:accessibilityFeedbackType="feedbackGeneric"
+    android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews|flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:canRetrieveWindowContent="true"
+    android:canPerformGestures="false"
+    android:description="@string/accessibility_service_description"
+    android:notificationTimeout="100"
+    android:packageNames="com.google.android.youtube,com.instagram.android,com.instagram.lite,com.zhiliaoapp.musically,com.ss.android.ugc.trill,com.facebook.katana,com.facebook.lite,com.snapchat.android,com.android.chrome,com.sec.android.app.sbrowser"
+    android:settingsActivity="com.touchgrass.app.MainActivity"
+    android:summary="@string/accessibility_service_summary" />

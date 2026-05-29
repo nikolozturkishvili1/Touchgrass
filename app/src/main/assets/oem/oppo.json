@@ -1,0 +1,55 @@
+{
+  "oemId": "oppo",
+  "displayName": "Oppo",
+  "manufacturerMatches": ["OPPO", "Oppo"],
+  "brandMatches": ["oppo"],
+  "steps": [
+    {
+      "title": "Open Battery settings",
+      "description": "REQUIRED. Open the Settings app, then tap 'Battery'. On ColorOS 14/15 the Battery menu sits near the top of Settings, usually directly under 'Display & Brightness'. Do not use a third-party 'battery saver' app for any of the following steps - ColorOS only honours its own per-app whitelists.",
+      "screenshot": "oem_oppo_step1"
+    },
+    {
+      "title": "Open App Battery Management and allow background activity",
+      "description": "REQUIRED. On the Battery screen tap 'App Battery Management' (sometimes shown as 'More Battery Settings' > 'App Battery Management'). Scroll to 'Touchgrass' and tap it. Turn ON 'Allow Background Activity' and 'Allow Auto Launch'. Make sure 'Allow Foreground Activity' is also on. This is the single most important toggle on ColorOS - without it, the OS will freeze Touchgrass within a few minutes of the screen turning off.",
+      "screenshot": "oem_oppo_step2"
+    },
+    {
+      "title": "Set Battery Usage to Unrestricted",
+      "description": "REQUIRED. Go back to Settings, tap 'Apps' (or 'App Management'), tap 'App List', then find and tap 'Touchgrass'. Tap 'Battery Usage' and choose 'Unrestricted' (on older ColorOS builds this option is labelled 'Don't optimize' under Settings > Battery > More Battery Settings > Battery Optimization > All Apps > Touchgrass). 'Optimized' is the default and is not strong enough on Oppo - pick 'Unrestricted' even though the system warns you about battery drain.",
+      "screenshot": "oem_oppo_step3"
+    },
+    {
+      "title": "Enable Touchgrass in Startup Manager",
+      "description": "REQUIRED. Go back to Settings and open 'Privacy' (older ColorOS: 'Security' or 'Phone Manager' > 'Privacy Permissions'). Tap 'Startup Manager' (also called 'Auto Launch' or 'Auto-startup'). Find 'Touchgrass' in the list and toggle it ON. Confirm the warning dialog. This is a second, separate kill-switch from the Battery setting above - if it is off, ColorOS will block Touchgrass from being launched by the system after a reboot or after it has been swiped away, and your scheduled blocks will silently stop firing.",
+      "screenshot": "oem_oppo_step4"
+    },
+    {
+      "title": "Turn off Sleep Standby Optimization for Touchgrass",
+      "description": "REQUIRED on ColorOS 13+. Open Settings > Battery > tap the three-dot menu (top-right) or 'More Battery Settings' > 'Sleep Standby Optimization' (also labelled 'High Power Consumption when Sleeping' on some builds). Either turn the master toggle OFF entirely, or find 'Touchgrass' in the per-app list and exclude it. Sleep Standby Optimization is the feature that freezes apps during the hours Oppo thinks you are asleep - it will kill Touchgrass overnight if you don't exclude it, which breaks morning blocks.",
+      "screenshot": "oem_oppo_step5"
+    },
+    {
+      "title": "Lock Touchgrass in Recents",
+      "description": "RECOMMENDED. Open the Recents view (swipe up from the bottom and hold, or tap the square nav button). Find the Touchgrass card, tap the small app icon at the top of the card, then tap 'Lock' (padlock icon). A small lock badge appears on the card. Locked apps survive 'Clear all' and are killed last under memory pressure - on ColorOS this is often the difference between Touchgrass surviving a heavy gaming session or being killed silently.",
+      "screenshot": "oem_oppo_step6"
+    },
+    {
+      "title": "Turn off High Background Power Consumption alerts",
+      "description": "RECOMMENDED. Open Settings > Battery > 'More Battery Settings' (or the three-dot menu) and turn OFF 'High Background Power Consumption' notifications for Touchgrass if such a row appears. ColorOS sometimes auto-restricts apps that it has previously flagged for 'abnormal' background usage, even if you whitelisted them earlier. Dismissing these alerts for Touchgrass stops ColorOS from quietly re-applying restrictions after a system update.",
+      "screenshot": "oem_oppo_step7"
+    },
+    {
+      "title": "Disable Power Saving Mode (or whitelist Touchgrass)",
+      "description": "RECOMMENDED. Open Settings > Battery and check 'Power Saving Mode' and 'Super Power Saving Mode'. If either is enabled, either turn it OFF, or open it and confirm Touchgrass is in the allowed-apps list. Super Power Saving Mode in particular will kill every app not on its short whitelist, including Touchgrass, the moment your battery dips below the trigger threshold.",
+      "screenshot": "oem_oppo_step8"
+    }
+  ],
+  "deepLinkIntent": "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+  "sources": [
+    "https://dontkillmyapp.com/oppo",
+    "https://www.salestrail.io/knowledge-base/oppo-devices-coloros-14-13-12-11-10",
+    "https://fynchmobility.com/en/faq/instructions-for-oppo/",
+    "https://www.techbone.net/oppo/user-manual/background-activity"
+  ]
+}

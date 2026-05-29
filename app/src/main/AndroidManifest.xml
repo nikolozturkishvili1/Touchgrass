@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Touchgrass manifest.
+
+    Permission policy (spec §11.3):
+    - BIND_ACCESSIBILITY_SERVICE: required to observe foreground app UI events. Declared on the service itself.
+    - FOREGROUND_SERVICE / FOREGROUND_SERVICE_SPECIAL_USE: needed on Android 14+ for the watchdog process.
+    - POST_NOTIFICATIONS: needed on Android 13+ for the persistent service notification + watchdog alerts.
+    - RECEIVE_BOOT_COMPLETED: re-arms the service on reboot (reliability layer, spec §4.6).
+    - INTERNET: scoped strictly to email-OTP commitment lock.
+
+    Do NOT add other permissions silently. See spec §11.3.
+    NOTE: BILLING permission and billing-ktx dep removed for V1 (free, no Plus tier per 2026-05-12
+    monetization pivot). Re-add when Plus returns.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission
+        android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"
+        tools:targetApi="34" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".TouchgrassApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Touchgrass.Splash"
+        tools:targetApi="35">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Touchgrass.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Heart of the app (spec §4.4). The accessibility_service_config.xml strictly scopes
+            packageNames to the supported blocking targets — never observes the whole device.
+        -->
+        <service
+            android:name=".accessibility.TouchgrassAccessibilityService"
+            android:exported="false"
+            android:label="@string/accessibility_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <service
+            android:name=".service.TouchgrassForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            tools:targetApi="34">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="touchgrass_reliability_watchdog" />
+        </service>
+
+        <receiver
+            android:name=".service.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- WorkManager is initialized lazily by Hilt; no provider entry needed. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+    </application>
+
+    <!-- Queries for package visibility (Android 11+). Required to read foreground app info. -->
+    <queries>
+        <package android:name="com.google.android.youtube" />
+        <package android:name="com.instagram.android" />
+        <package android:name="com.instagram.lite" />
+        <package android:name="com.zhiliaoapp.musically" /> <!-- TikTok intl -->
+        <package android:name="com.ss.android.ugc.trill" />  <!-- TikTok intl alt -->
+        <package android:name="com.facebook.katana" />
+        <package android:name="com.facebook.lite" />
+        <package android:name="com.snapchat.android" />
+        <package android:name="com.android.chrome" />
+        <package android:name="com.sec.android.app.sbrowser" /> <!-- Samsung Internet -->
+    </queries>
+</manifest>

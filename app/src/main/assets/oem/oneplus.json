@@ -1,0 +1,45 @@
+{
+  "oemId": "oneplus",
+  "displayName": "OnePlus",
+  "manufacturerMatches": ["OnePlus"],
+  "brandMatches": ["oneplus"],
+  "steps": [
+    {
+      "title": "Open Battery optimization",
+      "description": "Open the Settings app, tap 'Battery', then tap 'Battery optimization' at the bottom of the screen. On OxygenOS 14 and 15 this menu sits under Settings > Battery; if you cannot find it, search 'Battery optimization' from the Settings search bar. This step is required.",
+      "screenshot": "oem_oneplus_step1"
+    },
+    {
+      "title": "Set Touchgrass to Don't optimize",
+      "description": "At the top of the Battery optimization screen, tap the dropdown that says 'Not optimized' and switch it to 'All apps'. Scroll to find 'Touchgrass' and tap it, choose 'Don't optimize', and tap 'Done'. This is the single most important step — without it OxygenOS will stop Touchgrass in the background and your blocks will not run.",
+      "screenshot": "oem_oneplus_step2"
+    },
+    {
+      "title": "Allow background activity for Touchgrass",
+      "description": "Go back to Settings, tap 'Apps', tap 'App management' (or 'See all apps'), and open 'Touchgrass'. Tap 'Battery usage' and select 'Allow background activity' (some OxygenOS 15 builds label this 'Unrestricted'). On the same screen, scroll down and turn OFF 'Pause app activity if unused' so OxygenOS does not auto-hibernate Touchgrass after a few days. This step is required.",
+      "screenshot": "oem_oneplus_step3"
+    },
+    {
+      "title": "Disable Deep optimization and Sleep standby optimization",
+      "description": "Return to Settings > Battery > Battery optimization. Tap the three-dot menu in the top-right corner and choose 'Advanced optimization'. Turn OFF the 'Deep optimization' toggle and the 'Sleep standby optimization' toggle. Deep optimization is OnePlus's main background-app killer, and Sleep standby silences network connections at night — both will break Touchgrass if left on. This step is strongly recommended; leaving these on is the most common reason OnePlus reverts your 'Don't optimize' choice overnight.",
+      "screenshot": "oem_oneplus_step4"
+    },
+    {
+      "title": "Lock Touchgrass in Recent apps",
+      "description": "Open Touchgrass once, then open the Recent apps view (swipe up from the bottom and hold, or tap the recents button). Find the Touchgrass card, then either tap-and-hold the card and choose 'Lock', or drag the card downward until a small padlock icon appears at the top. A closed padlock means OxygenOS will not clear Touchgrass when you tap 'Clear all'. Nice-to-have but highly recommended: OnePlus is known to silently revert battery-optimization choices, and locking the card is the most reliable way to make them stick.",
+      "screenshot": "oem_oneplus_step5"
+    },
+    {
+      "title": "Reboot and verify",
+      "description": "Restart your phone so OxygenOS commits the new allowlist. After the reboot, reopen Touchgrass, then go back to Settings > Battery > Battery optimization > All apps and confirm 'Touchgrass' still shows 'Don't optimize'. If it has reverted, repeat steps 2 and 5 — and check that step 4's toggles are still off. Nice-to-have but the only way to be sure the settings stuck.",
+      "screenshot": "oem_oneplus_step6"
+    }
+  ],
+  "deepLinkIntent": "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+  "sources": [
+    "https://dontkillmyapp.com/oneplus",
+    "https://community.oneplus.com/thread/1253126028659261443",
+    "https://community.oneplus.com/thread/1357876",
+    "https://support.bark.us/hc/en-us/articles/360050416511-Battery-optimization-on-OnePlus-devices"
+  ]
+}

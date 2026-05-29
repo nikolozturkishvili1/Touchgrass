@@ -1,0 +1,51 @@
+{
+  "oemId": "realme",
+  "displayName": "Realme",
+  "manufacturerMatches": ["realme", "Realme"],
+  "brandMatches": ["realme"],
+  "steps": [
+    {
+      "title": "Open App Battery Management",
+      "description": "REQUIRED. Open Settings, tap 'Battery', then tap 'Power saving settings' (older Realme UI 4/5 builds may show this as 'More settings' or 'Advanced settings'). Tap 'App battery management'. This is the central Realme UI screen that governs every per-app background behaviour — without changing it, Realme UI's com.coloros.athena service will freeze Touchgrass within minutes of the screen turning off.",
+      "screenshot": "oem_realme_step1"
+    },
+    {
+      "title": "Allow background activity and auto launch for Touchgrass",
+      "description": "REQUIRED. In the 'App battery management' list, scroll to 'Touchgrass' and tap it. Enable ALL THREE toggles: 'Allow auto launch', 'Allow foreground activity', and 'Allow background activity'. (Realme inherits this screen from ColorOS, so on some regional builds the labels read 'Allow auto-launch' / 'Allow background running' — these are the same toggles.) Leaving 'Allow background activity' off is the single biggest cause of missed Touchgrass schedules on Realme phones.",
+      "screenshot": "oem_realme_step2"
+    },
+    {
+      "title": "Set Battery usage to Unrestricted",
+      "description": "REQUIRED. Go back to Settings, tap 'Apps' (or 'App management' on Realme UI 5), tap 'App list' / 'Manage apps', and open 'Touchgrass'. Tap 'Battery usage' and select 'Unrestricted'. On Realme UI 6 / Android 15 builds the screen is titled 'Battery' and the options are 'Unrestricted', 'Optimised' and 'Restricted' — pick 'Unrestricted'. This is the stock-Android battery whitelist; it works in parallel with App battery management and Realme honours whichever is the strictest.",
+      "screenshot": "oem_realme_step3"
+    },
+    {
+      "title": "Enable Touchgrass in Phone Manager → Startup Manager",
+      "description": "REQUIRED. Open the 'Phone Manager' app from your app drawer (preinstalled, grey-and-blue shield icon; on some builds it is called 'Security' or 'Device Maintenance'). Tap 'Privacy permissions', then tap 'Startup manager' (also labelled 'Auto-launch' on Realme UI 5). Find 'Touchgrass' and toggle it ON; accept the confirmation dialog. This is a separate kill-switch from the Battery setting in step 2 — Realme UI uses it to decide whether Touchgrass may relaunch itself after a reboot or after being swiped away.",
+      "screenshot": "oem_realme_step4"
+    },
+    {
+      "title": "Lock Touchgrass in Recents",
+      "description": "RECOMMENDED. Open Touchgrass once, then open the Recents view (swipe up from the bottom and hold, or tap the square nav button). Find the Touchgrass card, then either drag the card slightly downward, or tap the small icon at the top of the card and choose 'Lock'. A padlock badge will appear on the card. Locked cards survive 'Clear all' and are the last apps Realme UI kills when memory runs low — essential because Realme aggressively trims recents after the screen has been off for a few minutes.",
+      "screenshot": "oem_realme_step5"
+    },
+    {
+      "title": "Turn off Sleep standby optimisation",
+      "description": "RECOMMENDED. Go to Settings → Battery → 'Power saving settings' (Realme UI 6) or 'More settings' → 'Optimised standby' (Realme UI 4/5). Turn OFF 'Sleep standby optimisation' (also seen as 'Ultra standby mode' on some Realme UI 5 builds). With this on, Realme UI cuts network and CPU for backgrounded apps after the screen has been off for ~30 minutes, which silently delays Touchgrass timer ticks overnight. Disabling it costs only a small amount of standby battery and is the most reliable fix for 'blocks didn't fire while I was asleep'.",
+      "screenshot": "oem_realme_step6"
+    },
+    {
+      "title": "Disable 'Pause app activity if unused' for Touchgrass",
+      "description": "RECOMMENDED. Open Settings → Apps → 'App management' → Touchgrass, scroll to the bottom and turn OFF 'Pause app activity if unused' (sometimes labelled 'Remove permissions and free up space' on Android 14/15 builds). If this is left on, Realme UI will revoke Touchgrass's permissions and stop its background services after roughly 30 days of light use, breaking enforcement until you reopen the app. This is the same Android 13+ setting Google added — Realme just enables it by default.",
+      "screenshot": "oem_realme_step7"
+    }
+  ],
+  "deepLinkIntent": "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+  "sources": [
+    "https://dontkillmyapp.com/realme",
+    "https://www.techbone.net/realme/user-manual/background-activity-of-apps",
+    "https://www.techbone.net/realme/user-manual/auto-start-apps",
+    "https://www.realme.com/in/support/kw/doc/2068398",
+    "https://www.realme.com/in/support/kw/doc/2059684"
+  ]
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Bridge colors for XML (splash theme, notification accents).
+    Compose owns the full palette — see ui/theme/Color.kt. Values mirror spec §5.2.
+-->
+<resources>
+    <color name="touchgrass_bg_light">#FAF8F3</color>
+    <color name="touchgrass_bg_dark">#1A1C18</color>
+    <color name="touchgrass_primary">#3E5E3A</color>
+    <color name="touchgrass_accent">#C9D5A4</color>
+    <color name="touchgrass_danger">#A24E3E</color>
+    <color name="touchgrass_text_primary">#1F231C</color>
+    <color name="touchgrass_text_secondary">#5C645A</color>
+</resources>

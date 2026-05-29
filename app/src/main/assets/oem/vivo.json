@@ -1,0 +1,50 @@
+{
+  "oemId": "vivo",
+  "displayName": "Vivo / iQOO",
+  "manufacturerMatches": ["vivo"],
+  "brandMatches": ["vivo", "iqoo"],
+  "steps": [
+    {
+      "title": "Allow High Background Power Consumption",
+      "description": "REQUIRED. Open the Settings app and tap 'Battery'. Scroll down and tap 'Background power consumption management' (on older FuntouchOS builds this is labelled 'High background power consumption'; on OriginOS 6 in China the same screen is under Settings > Battery > Background app refresh). Find 'Touchgrass' in the list and toggle it ON. This is the single most important step on a Vivo - without it the OS will silently kill the Touchgrass timer service within minutes of the screen turning off, and your blocks will stop firing.",
+      "screenshot": "oem_vivo_step1"
+    },
+    {
+      "title": "Open iManager and turn on Autostart for Touchgrass",
+      "description": "REQUIRED. Find the 'iManager' app in your app drawer (blue shield icon, preinstalled on every Vivo and iQOO phone; on OriginOS 6 it may be called 'Phone Manager' or 'Vivo Manager'). Open it and tap 'App manager' > 'Autostart manager'. Find 'Touchgrass' in the 'Disabled autostart applications' list and toggle the switch ON. Confirm any warning dialog. Without this, FuntouchOS / OriginOS will block Touchgrass from launching itself after a reboot or after the system has reclaimed its memory, and your block schedules will stop firing until you reopen the app by hand.",
+      "screenshot": "oem_vivo_step2"
+    },
+    {
+      "title": "Allow background activity in App info",
+      "description": "REQUIRED. Open Settings > Apps > App manager (called 'Installed apps' on some FuntouchOS 13 / 14 builds) > 'Touchgrass'. Tap 'Battery' (or 'Power usage' on OriginOS 6). Select 'Allow background activity' / 'Unrestricted' so the standard Android battery saver does not pile on top of Vivo's own restriction. This is the AOSP-level toggle that mirrors the Vivo-specific one in step 1 - you need both, because Vivo enforces them independently.",
+      "screenshot": "oem_vivo_step3"
+    },
+    {
+      "title": "Enable Autostart from the Apps menu (newer FuntouchOS / OriginOS)",
+      "description": "REQUIRED on FuntouchOS 12+ and OriginOS 3+. Open Settings > 'More settings' > 'Applications' > 'Autostart' (on OriginOS 6 the path is Settings > Apps > Special access > 'Auto-launch'). Find 'Touchgrass' and toggle it ON. This is a second, separate autostart whitelist that Vivo introduced alongside the iManager one; newer firmware reads from this list instead of the iManager list, but older firmware reads only from iManager - so set both to be safe.",
+      "screenshot": "oem_vivo_step4"
+    },
+    {
+      "title": "Lock Touchgrass in Recent apps",
+      "description": "RECOMMENDED. Open Touchgrass once, then open the Recent apps view (swipe up from the bottom and hold, or tap the recents button). Find the Touchgrass card and drag it downward until a small padlock icon appears at the top of the card - or long-press the card and choose 'Lock'. A closed padlock means FuntouchOS / OriginOS will not clear Touchgrass when you tap 'Clear all', and the system will kill it last under memory pressure. Vivo is known to silently revert battery-optimization choices, and locking the card is the most reliable way to make them stick.",
+      "screenshot": "oem_vivo_step5"
+    },
+    {
+      "title": "Turn off 'Pause app activity if unused' for Touchgrass",
+      "description": "RECOMMENDED. Open Settings > Apps > App manager > 'Touchgrass'. Scroll to the bottom and turn OFF 'Pause app activity if unused' (also labelled 'Remove permissions and free up space' on FuntouchOS 14, or 'App hibernation' on OriginOS 6). If left on, the OS will revoke Touchgrass's permissions and stop its services after a few weeks of light use, silently breaking enforcement until you reopen the app.",
+      "screenshot": "oem_vivo_step6"
+    },
+    {
+      "title": "Disable 'Don't keep activities' in Developer options",
+      "description": "RECOMMENDED only if the previous steps have not stuck. Open Settings > About phone, tap 'Software version' (or 'Version information' on OriginOS 6), then tap the 'Build number' row 7 times to unlock Developer options. Go back to Settings > System management (or 'System' on OriginOS) > Developer options. Make sure 'Don't keep activities' is OFF, and set 'Background process limit' to 'Standard limit'. Skip this step if you are uncomfortable with developer options - the previous steps are usually enough.",
+      "screenshot": "oem_vivo_step7"
+    }
+  ],
+  "deepLinkIntent": null,
+  "sources": [
+    "https://dontkillmyapp.com/vivo",
+    "https://qepon.com/blog/post-3/",
+    "https://gadgetstouse.com/blog/2022/09/07/stop-apps-killed-vivo-funtouch/",
+    "https://www.salestrail.io/knowledge-base/vivo-devices-funtouch-os-or-origin-os-"
+  ]
+}

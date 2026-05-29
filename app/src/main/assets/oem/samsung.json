@@ -1,0 +1,45 @@
+{
+  "oemId": "samsung",
+  "displayName": "Samsung Galaxy",
+  "manufacturerMatches": ["Samsung"],
+  "brandMatches": ["samsung"],
+  "steps": [
+    {
+      "title": "Open Battery and device care",
+      "description": "Open the Settings app on your Galaxy phone, scroll down, and tap 'Battery and device care'. On One UI 7 (Android 15) this menu may simply be called 'Battery'. If you see 'Battery' instead, tap that and skip to step 2.",
+      "screenshot": "oem_samsung_step1"
+    },
+    {
+      "title": "Tap Battery",
+      "description": "Inside 'Battery and device care', tap 'Battery'. You should now see a screen with a battery percentage, an estimated time remaining, and entries like 'Power saving', 'Background usage limits', and 'More battery settings'.",
+      "screenshot": "oem_samsung_step2"
+    },
+    {
+      "title": "Open Background usage limits",
+      "description": "Tap 'Background usage limits'. This is the One UI screen that controls how Samsung kills background apps. Make sure the toggle 'Put unused apps to sleep' is the only restriction you rely on; do not enable 'Add apps to Deep sleeping apps automatically' for Touchgrass.",
+      "screenshot": "oem_samsung_step3"
+    },
+    {
+      "title": "Add Touchgrass to Never sleeping apps",
+      "description": "Tap 'Never sleeping apps'. Tap the '+' (plus) icon in the top-right corner, scroll or search for 'Touchgrass', tick the checkbox next to it, then tap 'Add' (or 'Done'). Touchgrass should now appear in the list. Also confirm that Touchgrass is NOT listed under 'Sleeping apps' or 'Deep sleeping apps' on the previous screen — if it is, tap it there and tap 'Remove'.",
+      "screenshot": "oem_samsung_step4"
+    },
+    {
+      "title": "Set Touchgrass battery usage to Unrestricted",
+      "description": "Go back to Settings, tap 'Apps', tap 'Touchgrass', then tap 'Battery'. Select 'Unrestricted'. (On One UI 7 this screen is titled 'Battery usage' and the options are 'Unrestricted', 'Optimised', and 'Restricted'.) Choosing Unrestricted tells One UI's Auto-optimise daily routine to leave Touchgrass alone.",
+      "screenshot": "oem_samsung_step5"
+    },
+    {
+      "title": "Turn off Auto-optimise restrictions for Touchgrass",
+      "description": "Return to Settings → 'Battery and device care' → tap the three-dot menu (top-right) → 'Automation' → 'Auto-optimise daily'. Leave the daily optimisation ON, but confirm 'Close apps to free up memory' will not affect Touchgrass — because Touchgrass is now in 'Never sleeping apps' and set to 'Unrestricted', the daily sweep will skip it. Reboot the phone once so One UI commits the new allowlist.",
+      "screenshot": "oem_samsung_step6"
+    }
+  ],
+  "deepLinkIntent": "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS",
+  "sources": [
+    "https://www.samsung.com/us/support/galaxy-battery/optimization/",
+    "https://www.androidcentral.com/how-turn-battery-optimization-your-samsung-galaxy-phone",
+    "https://dontkillmyapp.com/samsung",
+    "https://developer.samsung.com/mobile/app-management.html"
+  ]
+}
