@@ -1,0 +1,52 @@
+# Publishes marketing/landing-page/ to GitHub Pages so the privacy policy and
+# landing page are live at:
+#   https://nikolozturkishvili1.github.io/Touchgrass/
+#   https://nikolozturkishvili1.github.io/Touchgrass/privacy.html  <- Play Store privacy URL
+#
+# `enablement: true` turns Pages on via the workflow token, so no manual
+# Settings toggle is needed for a public repo. If a first run ever fails to
+# enable, set Settings -> Pages -> Source: "GitHub Actions" once and re-run.
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'marketing/landing-page/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+# Least privilege: read the repo, write Pages, mint the OIDC token deploy-pages needs.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never cancel an in-flight Pages deploy; let the latest finish in order.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages (enable if needed)
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload landing page as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: marketing/landing-page
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
