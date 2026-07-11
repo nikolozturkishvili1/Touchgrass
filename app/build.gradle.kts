@@ -25,11 +25,14 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.touchgrass.app"
+        // Play Console app is registered under com.touchgrassinc.app (com.touchgrass.app was
+        // unavailable), so the published applicationId must match it. The Kotlin/namespace stays
+        // com.touchgrass.app — applicationId and namespace are independent, so no sources move.
+        applicationId = "com.touchgrassinc.app"
         minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }

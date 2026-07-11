@@ -25,8 +25,6 @@ class WatchdogNotifier
     constructor(
         @ApplicationContext private val context: Context,
     ) {
-        // `reason` is accepted for API symmetry and future per-reason copy; not surfaced yet.
-        @Suppress("UnusedParameter")
         fun notifyUnhealthy(reason: WatchdogHealth) {
             val openAppIntent =
                 Intent(context, MainActivity::class.java).apply {
@@ -40,12 +38,27 @@ class WatchdogNotifier
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
                 )
 
+            // Tailored copy: "your phone turned it off, flip it back on" is actionable in a way
+            // that a generic "stopped working" is not (spec §4.6).
+            val title =
+                when (reason) {
+                    is WatchdogHealth.AccessibilityNotEnabled ->
+                        context.getString(R.string.watchdog_notification_title_accessibility_off)
+                    else -> context.getString(R.string.watchdog_notification_title)
+                }
+            val text =
+                when (reason) {
+                    is WatchdogHealth.AccessibilityNotEnabled ->
+                        context.getString(R.string.watchdog_notification_text_accessibility_off)
+                    else -> context.getString(R.string.watchdog_notification_text)
+                }
+
             val notification =
                 NotificationCompat
                     .Builder(context, NotificationChannels.WATCHDOG_ID)
                     .setSmallIcon(R.drawable.ic_notification_touchgrass)
-                    .setContentTitle(context.getString(R.string.watchdog_notification_title))
-                    .setContentText(context.getString(R.string.watchdog_notification_text))
+                    .setContentTitle(title)
+                    .setContentText(text)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)

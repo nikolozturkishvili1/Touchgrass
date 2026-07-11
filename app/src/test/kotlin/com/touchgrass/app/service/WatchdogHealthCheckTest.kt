@@ -21,10 +21,10 @@ class WatchdogHealthCheckTest {
 
     private val heartbeat = mockk<Heartbeat>()
     private val enablement = mockk<AccessibilityEnablementCheck>()
+    private val liveness = mockk<AccessibilityServiceLiveness>()
     private val clock = FakeClock()
 
-    private fun newCheck(stalenessMs: Long = WatchdogHealthCheck.DEFAULT_STALENESS_MS): WatchdogHealthCheck =
-        WatchdogHealthCheck(heartbeat, enablement, clock).apply { stalenessThresholdMs = stalenessMs }
+    private fun newCheck(): WatchdogHealthCheck = WatchdogHealthCheck(heartbeat, enablement, liveness, clock)
 
     @Test
     fun `accessibility disabled short-circuits to AccessibilityNotEnabled`() =
@@ -37,55 +37,69 @@ class WatchdogHealthCheckTest {
         }
 
     @Test
-    fun `enabled but no heartbeat returns NeverBeaten`() =
+    fun `enabled and connected is Healthy even with no heartbeat ever`() =
         runTest {
             every { enablement.isEnabled() } returns true
+            every { liveness.isConnected() } returns true
+
+            val result = newCheck().check()
+
+            assertEquals(WatchdogHealth.Healthy, result)
+        }
+
+    @Test
+    fun `enabled and connected is Healthy even with an ancient heartbeat`() =
+        runTest {
+            // The false-positive regression case: user simply hasn't opened a blocked app in
+            // 8+ hours. Service is bound, so this must be Healthy — no "tap to fix" alarm.
+            every { enablement.isEnabled() } returns true
+            every { liveness.isConnected() } returns true
+            coEvery { heartbeat.lastBeatElapsedMillis() } returns 0L
+            clock.elapsed = 8L * 60L * 60L * 1_000L
+
+            val result = newCheck().check()
+
+            assertEquals(WatchdogHealth.Healthy, result)
+        }
+
+    @Test
+    fun `enabled but not connected returns ServiceNotConnected with heartbeat age`() =
+        runTest {
+            every { enablement.isEnabled() } returns true
+            every { liveness.isConnected() } returns false
+            coEvery { heartbeat.lastBeatElapsedMillis() } returns 1_000L
+            clock.elapsed = 61_000L
+
+            val result = newCheck().check()
+
+            assertTrue("expected ServiceNotConnected, got $result", result is WatchdogHealth.ServiceNotConnected)
+            assertEquals(60_000L, (result as WatchdogHealth.ServiceNotConnected).sinceLastBeatMs)
+        }
+
+    @Test
+    fun `not connected with no heartbeat ever reports null age`() =
+        runTest {
+            every { enablement.isEnabled() } returns true
+            every { liveness.isConnected() } returns false
             coEvery { heartbeat.lastBeatElapsedMillis() } returns null
 
             val result = newCheck().check()
 
-            assertEquals(WatchdogHealth.NeverBeaten, result)
+            assertEquals(WatchdogHealth.ServiceNotConnected(sinceLastBeatMs = null), result)
         }
 
     @Test
-    fun `fresh heartbeat returns Healthy`() =
+    fun `heartbeat from a previous boot reports null age instead of negative`() =
         runTest {
+            // DataStore persists across reboots; elapsedRealtime resets. Stored beat can be
+            // LARGER than current elapsed — must not surface a negative gap.
             every { enablement.isEnabled() } returns true
-            coEvery { heartbeat.lastBeatElapsedMillis() } returns 1_000L
-            clock.elapsed = 2_000L
+            every { liveness.isConnected() } returns false
+            coEvery { heartbeat.lastBeatElapsedMillis() } returns 999_999L
+            clock.elapsed = 10_000L
 
-            val result = newCheck(stalenessMs = 60_000L).check()
+            val result = newCheck().check()
 
-            assertEquals(WatchdogHealth.Healthy, result)
+            assertEquals(WatchdogHealth.ServiceNotConnected(sinceLastBeatMs = null), result)
         }
-
-    @Test
-    fun `heartbeat exactly at the staleness threshold is still Healthy`() =
-        runTest {
-            every { enablement.isEnabled() } returns true
-            coEvery { heartbeat.lastBeatElapsedMillis() } returns 0L
-            clock.elapsed = 60_000L
-
-            val result = newCheck(stalenessMs = 60_000L).check()
-
-            assertEquals(WatchdogHealth.Healthy, result)
-        }
-
-    @Test
-    fun `heartbeat one ms over the threshold returns Stale`() =
-        runTest {
-            every { enablement.isEnabled() } returns true
-            coEvery { heartbeat.lastBeatElapsedMillis() } returns 0L
-            clock.elapsed = 60_001L
-
-            val result = newCheck(stalenessMs = 60_000L).check()
-
-            assertTrue("expected Stale, got $result", result is WatchdogHealth.Stale)
-            assertEquals(60_001L, (result as WatchdogHealth.Stale).sinceLastBeatMs)
-        }
-
-    @Test
-    fun `default staleness threshold matches spec at 6 hours`() {
-        assertEquals(6L * 60L * 60L * 1_000L, WatchdogHealthCheck.DEFAULT_STALENESS_MS)
-    }
 }

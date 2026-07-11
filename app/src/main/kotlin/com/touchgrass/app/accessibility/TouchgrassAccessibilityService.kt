@@ -1,6 +1,7 @@
 package com.touchgrass.app.accessibility
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Intent
 import android.view.accessibility.AccessibilityEvent
 import com.touchgrass.app.data.local.PreferencesRepository
 import com.touchgrass.app.data.repository.BlockEventRepository
@@ -75,6 +76,7 @@ class TouchgrassAccessibilityService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        isConnected = true
         Timber.i("TouchgrassAccessibilityService connected with %d detectors", detectorsByPackage.size)
         scope.launch {
             preferencesRepository.touchgrassEnabled.collectLatest { touchgrassEnabled = it }
@@ -143,8 +145,29 @@ class TouchgrassAccessibilityService : AccessibilityService() {
         Timber.w("TouchgrassAccessibilityService interrupted by system")
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        isConnected = false
+        Timber.w("TouchgrassAccessibilityService unbound by system")
+        return super.onUnbind(intent)
+    }
+
     override fun onDestroy() {
+        isConnected = false
         scope.cancel()
         super.onDestroy()
+    }
+
+    companion object {
+        /**
+         * Live binding state, written only by the service's own lifecycle callbacks (spec §4.6).
+         *
+         * This is the watchdog's liveness signal. The heartbeat can't distinguish "the user
+         * hasn't opened a blocked app in hours" (no events → no beats, perfectly healthy) from
+         * "the OS killed us" — this flag can: it dies with the process and is only true while
+         * the system holds an active binding. Read via [com.touchgrass.app.service.AccessibilityServiceLiveness].
+         */
+        @Volatile
+        var isConnected: Boolean = false
+            internal set
     }
 }

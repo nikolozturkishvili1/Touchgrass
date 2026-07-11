@@ -32,4 +32,6 @@ You can review and change which apps Touchgrass watches at any time, from inside
     <string name="watchdog_notification_channel_description">Tells you if Touchgrass stops working so you can re-enable it.</string>
     <string name="watchdog_notification_title">Touchgrass stopped working</string>
     <string name="watchdog_notification_text">Tap to fix.</string>
+    <string name="watchdog_notification_title_accessibility_off">Accessibility was turned off</string>
+    <string name="watchdog_notification_text_accessibility_off">Your phone switched Touchgrass off. Tap to turn it back on.</string>
 </resources>

@@ -1,6 +1,5 @@
 package com.touchgrass.app.service
 
-import androidx.annotation.VisibleForTesting
 import com.touchgrass.app.accessibility.Heartbeat
 import com.touchgrass.app.util.Clock
 import javax.inject.Inject
@@ -11,10 +10,13 @@ import javax.inject.Singleton
  * can be unit-tested without WorkManager test infrastructure.
  *
  * Decision tree:
- *  1. If the user has not enabled the AccessibilityService: [WatchdogHealth.AccessibilityNotEnabled].
- *  2. Else if the service has never written a heartbeat: [WatchdogHealth.NeverBeaten].
- *  3. Else if the heartbeat is older than [stalenessThresholdMs]: [WatchdogHealth.Stale].
- *  4. Else: [WatchdogHealth.Healthy].
+ *  1. If the service is not enabled in system Settings: [WatchdogHealth.AccessibilityNotEnabled].
+ *  2. Else if the OS currently holds a binding to the service: [WatchdogHealth.Healthy] —
+ *     regardless of heartbeat age. No events for hours just means the user didn't open a
+ *     blocked app; alarming on that punished users for the exact behavior the app exists to
+ *     encourage.
+ *  3. Else: [WatchdogHealth.ServiceNotConnected] — enabled but not bound, i.e. killed and not
+ *     rebound. Heartbeat age goes along as a diagnostic.
  */
 @Singleton
 class WatchdogHealthCheck
@@ -22,24 +24,19 @@ class WatchdogHealthCheck
     constructor(
         private val heartbeat: Heartbeat,
         private val accessibilityEnablementCheck: AccessibilityEnablementCheck,
+        private val serviceLiveness: AccessibilityServiceLiveness,
         private val clock: Clock,
     ) {
-        /**
-         * Six hours. During active use Touchgrass beats hundreds of times per day; a six-hour gap
-         * during waking hours means the service is genuinely dead. Long enough to avoid false
-         * positives during the user's sleep cycle.
-         */
-        @VisibleForTesting
-        internal var stalenessThresholdMs: Long = DEFAULT_STALENESS_MS
-
         suspend fun check(): WatchdogHealth {
             if (!accessibilityEnablementCheck.isEnabled()) return WatchdogHealth.AccessibilityNotEnabled
-            val lastBeat = heartbeat.lastBeatElapsedMillis() ?: return WatchdogHealth.NeverBeaten
-            val gap = clock.elapsedMillis() - lastBeat
-            return if (gap > stalenessThresholdMs) WatchdogHealth.Stale(gap) else WatchdogHealth.Healthy
-        }
+            if (serviceLiveness.isConnected()) return WatchdogHealth.Healthy
 
-        companion object {
-            const val DEFAULT_STALENESS_MS: Long = 6L * 60L * 60L * 1_000L
+            // Diagnostic payload. `elapsedMillis` resets on reboot while DataStore persists,
+            // so a negative gap means "heartbeat from a previous boot" — report as unknown.
+            val sinceLastBeat =
+                heartbeat.lastBeatElapsedMillis()?.let { last ->
+                    (clock.elapsedMillis() - last).takeIf { it >= 0 }
+                }
+            return WatchdogHealth.ServiceNotConnected(sinceLastBeat)
         }
     }

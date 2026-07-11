@@ -119,7 +119,7 @@ Tags to set in Play Console:
 
 - **Price:** Free
 - **Countries:** All — start with worldwide availability; tighten only if Play Console flags a region
-- **Distribution:** Initial release to **Closed Testing** track (≥20 testers required for production graduation since Nov 2023)
+- **Distribution:** Initial release to **Closed Testing** track (≥12 testers required for production graduation; rule updated 2024-12-11, down from 20)
 - **Device compatibility:**
   - Min Android 10 (API 29)
   - Target Android 15 (API 35) — bump to 16 once stable to keep ahead of Play deadlines
@@ -158,5 +158,5 @@ Per Play Console policy, before you can hit "Publish":
   - Required disclosure shown to user: "We open the Trust Dashboard during onboarding, before Accessibility is requested. The on-device accessibility-service description string also explains the scope."
   - Why this functionality isn't possible without Accessibility: "Android does not expose foreground-app UI events to third-party apps through any other API. Apps like Usage Stats only report aggregate time, not which screen is open. No other API can perform `GLOBAL_ACTION_BACK` to intercept a feed."
   - Open source proof: link to repo.
-- [ ] 20+ internal testers opted in through Closed Testing for 14+ days before promotion to Production (Play's new rule since 2023)
+- [ ] 12+ testers opted in through Closed Testing for 14+ days before promotion to Production (Play's rule, updated 2024-12-11, down from 20)
 - [ ] Closed Testing → Production promotion gate satisfied

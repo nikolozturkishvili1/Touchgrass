@@ -1,7 +1,7 @@
 # Touchgrass — Play Console runbook (Closed Testing submission)
 
 > **Goal:** get the signed AAB into the **Closed Testing** track and start the
-> **20-tester × 14-consecutive-day** clock (required before a new personal account
+> **12-tester × 14-consecutive-day** clock (required before a new personal account
 > can apply for production). Every value you need is below — copy/paste it.
 
 **Inputs you already have**
@@ -94,7 +94,7 @@ Touchgrass uses `AccessibilityService`, which Google reviews closely. Provide th
 
 - [ ] Copy the **tester opt-in URL** and send it to your testers (they must accept *and* install via Play).
 - [ ] First review: **2–7 days**. Watch the **Pre-launch report** for device-class crashes.
-- [ ] The clock: **≥20 testers opted in for 14 continuous days** → then "Apply for production access."
+- [ ] The clock: **≥12 testers opted in for 14 continuous days** (Google lowered this from 20 on 2024-12-11; recruit ~15 for a buffer) → then "Apply for production access."
 - [ ] Pre-production TODO (not blocking closed testing): register `gettouchgrass.app`, verify Resend so
   the commitment-lock email actually sends, then swap all URLs from github.io → gettouchgrass.app and rebuild.
 

@@ -63,3 +63,7 @@ sentry.properties
 
 # Claude Code MCP config (kept local — never put a token in this file)
 .mcp.json
+
+# Beta tester lists — contain testers' personal emails (PII). NEVER commit (repo is public).
+beta-testers.local.md
+*.testers.local.md

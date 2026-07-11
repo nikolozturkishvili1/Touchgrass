@@ -96,7 +96,7 @@ Ordered for actually shipping. Each block is roughly one sitting of work.
 - [ ] **App content rating:** complete the IARC questionnaire (answer "no" to everything sensitive). Should come back as "Everyone".
 - [ ] **App pricing:** Free.
 - [ ] **Countries:** All available.
-- [ ] **Closed Testing track:** create a tester list. Per Play's 2023 rule you need **20+ testers opted-in for at least 14 consecutive days** before promoting to production. Start this clock as early as possible.
+- [ ] **Closed Testing track:** create a tester list. Per Play's rule (updated 2024-12-11, down from 20) you need **12+ testers opted-in for at least 14 consecutive days** before promoting to production — recruit ~15 for a drop-off buffer. Start this clock as early as possible.
 
 ---
 
@@ -130,7 +130,7 @@ Ordered for actually shipping. Each block is roughly one sitting of work.
 
 ## 7 · Launch day
 
-- [ ] **Promote Closed Testing → Production** in Play Console. (Requires the 20-tester × 14-day gate satisfied.)
+- [ ] **Promote Closed Testing → Production** in Play Console. (Requires the 12-tester × 14-day gate satisfied.)
 - [ ] **Tag `v1.0.0`** in git → CI uploads signed AAB to Play production track.
 - [ ] **Submit to Product Hunt** (12:01am PT, Tue/Wed for best reach).
 - [ ] **Post in order through the day:**

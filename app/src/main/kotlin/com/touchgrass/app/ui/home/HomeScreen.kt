@@ -182,7 +182,9 @@ private fun AccessibilityOffContent(onOpenAccessibilitySettings: () -> Unit) {
     Spacer(Modifier.height(8.dp))
     Subtitle(
         "The Accessibility permission is how Touchgrass notices when you open a reel or short. " +
-            "Without it, it can't help.",
+            "Without it, it can't help. Some phones switch this off on their own to save " +
+            "battery — if it keeps happening, set Touchgrass to Unrestricted in your " +
+            "battery settings.",
     )
     Spacer(Modifier.height(32.dp))
     PrimaryButton(text = "Open Accessibility settings", onClick = onOpenAccessibilitySettings)
