@@ -3,7 +3,9 @@
 
 [versions]
 # Build tooling
-agp = "8.7.3"
+# AGP 8.9.1+ is required for compileSdk 36 (Play target-API-36 mandate, Aug 31 2026).
+# AGP 8.9.x needs Gradle 8.11.1+ — kept in sync in gradle/wrapper/gradle-wrapper.properties.
+agp = "8.9.2"
 kotlin = "2.1.20"
 ksp = "2.1.20-1.0.31"
 

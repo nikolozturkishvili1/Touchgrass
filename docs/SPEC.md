@@ -1,5 +1,21 @@
 # Touchgrass — Android App Build Specification
 
+> ### Read this before using the spec
+>
+> This is the **behavior spec** — what the app does and why. It is authoritative on
+> product behavior. It is **not** a status document and it is **not** current on
+> tooling.
+>
+> - Where the project actually is: **`../STATUS.md`**
+> - How to work in this repo: **`../CLAUDE.md`**
+> - How to ship: **`RELEASE.md`**
+> - Real build values: **`app/build.gradle.kts`** — the code wins over this file.
+>
+> **Superseded since 2026-06: V1 ships fully free.** Every mention below of a paid
+> "Touchgrass Plus" tier, Play Billing, or a $9.99 purchase is historical. There is
+> no paid tier, no IAP, and nothing behind a paywall. Any future paid tier is
+> one-time, never a subscription, and never gates blocking or the commitment lock.
+
 > **Audience:** Claude Code CLI, working with the solo developer (a .NET developer learning Kotlin + Jetpack Compose).
 >
 > **Mission:** Build and ship the V1 of Touchgrass — an Android app that reliably blocks Reels, Shorts, and other short-form infinite-scroll content. The wedge against the incumbent (NoScroll) is **reliability, trust, and zero ads**.
@@ -16,16 +32,16 @@ These are settled. Do not relitigate without explicit developer instruction.
 |---|---|
 | Product name | **Touchgrass** |
 | Play Store title | `Touchgrass: Block Reels & Shorts` |
-| Primary domain | **gettouchgrass.app** (HTTPS-enforced TLD) |
+| Primary domain | **gettouchgrass.app** (HTTPS-enforced TLD) — *not registered yet; all live URLs use GitHub Pages* |
 | Secondary domain | **gettouchgrass.com** (301-redirects to .app) |
 | Platform priority | Android first, iOS later (V2, via Family Controls + browser extension) |
 | Min Android SDK | API 29 (Android 10) |
-| Target Android SDK | API 35 (Android 15) |
+| Target Android SDK | API 36 (Android 16) |
 | Language | Kotlin 2.x |
 | UI | Jetpack Compose (Material 3) |
 | Source control & CI | **GitHub** (public repo, `Touchgrass`) |
 | License | **GPL-3.0** (protects open-source trust positioning; prevents predatory forks) |
-| Monetization | Free tier covers core blocking; **Touchgrass Plus** is one-time $9.99 for extras. No subscription. No ads. Ever. |
+| Monetization | **Superseded 2026-06: V1 ships fully free** — every feature, no paid tier, no IAP wired up. Any future paid tier is one-time, never a subscription, and never paywalls blocking or the commitment lock. No ads. Ever. |
 | Distribution | Google Play primary; F-Droid secondary (later) |
 
 ---
@@ -133,7 +149,7 @@ These findings come from analysis of ~60 NoScroll reviews (Google Play, 2024–2
   - "What Touchgrass sends: nothing. All data stays on your phone."
   - "Open source: github.com/nikolozturkishvili1/Touchgrass"
 - Privacy policy written in plain English.
-- No third-party analytics SDKs in V1. Not Firebase Analytics, not Mixpanel, not Amplitude. (Crash reporting via a privacy-respecting tool like Sentry is OK if disclosed in the Trust Dashboard.)
+- No third-party analytics SDKs in V1. Not Firebase Analytics, not Mixpanel, not Amplitude. **Superseded 2026-07: no crash reporting either — not Sentry, not anything.** "Zero third-party telemetry" is now an unqualified promise, and the IzzyOnDroid/F-Droid inclusion request states it as such.
 
 **D. Pause & friction**
 
@@ -177,7 +193,8 @@ These findings come from analysis of ~60 NoScroll reviews (Google Play, 2024–2
 ### 3.3 Monetization (V1)
 
 - **Free tier:** all core blocking, Trust Dashboard, basic stats, commitment lock (email OTP).
-- **Touchgrass Plus (one-time $9.99):** Quick Peek mode, advanced friction modes (math/breathing), themes, weekly recap PDF, multiple block profiles, detailed stats.
+- ~~**Touchgrass Plus (one-time $9.99):** Quick Peek mode, advanced friction modes (math/breathing), themes, weekly recap PDF, multiple block profiles, detailed stats.~~
+  **SUPERSEDED 2026-06 — no paid tier exists.** All of the above shipped free in V1.
 - **No subscription. No ads. No upsells inside the app beyond a single non-intrusive "Upgrade" entry in settings.**
 - Use Google Play Billing for one-time purchase.
 
@@ -192,14 +209,14 @@ These findings come from analysis of ~60 NoScroll reviews (Google Play, 2024–2
 | Language | Kotlin 2.0+ | Idiomatic Android, clean coroutines |
 | UI | Jetpack Compose (latest stable) | Declarative, similar mental model to modern React/SwiftUI; faster iteration |
 | Min SDK | API 29 (Android 10) | Covers ~95% of active devices; Accessibility API matured here |
-| Target SDK | API 35 (Android 15) | Required by Play Store |
+| Target SDK | API 36 (Android 16) | Required by Play Store (deadline Aug 31, 2026) |
 | Architecture | MVVM + Repository, single-activity | Standard, easy to maintain solo |
 | DI | Hilt | Google's recommended DI for Android |
 | Async | Coroutines + Flow | Idiomatic Kotlin |
 | Persistence | Room (for stats) + DataStore (for preferences) | Standard |
 | Build | Gradle Kotlin DSL, version catalog (`libs.versions.toml`) | Modern best practice |
 | CI | GitHub Actions | Free for public repos, easy |
-| Crash reporting | Sentry (optional, disclosed) OR none | Privacy-first |
+| Crash reporting | **None** (was: "Sentry optional" — superseded 2026-07) | Zero third-party telemetry |
 
 ### 4.2 Module structure
 
@@ -447,8 +464,8 @@ Accessible from Settings → "What can Touchgrass see?". A single scrollable scr
 
 ### Week 7: Polish, Play Billing, store listing
 
-- Implement Play Billing for one-time Touchgrass Plus.
-- Wire up Quick Peek behind the paywall.
+- ~~Implement Play Billing for one-time Touchgrass Plus.~~ **Dropped — V1 is free.**
+- ~~Wire up Quick Peek behind the paywall.~~ **Dropped — Quick Peek ships free.**
 - Visual polish, microcopy pass, dark mode QA.
 - Screenshots for Play Store.
 - Write store listing (see §9).
@@ -554,7 +571,7 @@ The developer may keep using Azure Boards for personal planning if preferred —
 >
 > ✓ **No ads. Ever.** We will never put an ad in this app.
 >
-> ✓ **No subscription.** The free tier blocks everything we promise. Touchgrass Plus is a one-time $9.99 if you want Quick Peek, themes, and weekly recaps.
+> ✓ **No subscription, and no paid tier at all in V1.** Everything is free, including Quick Peek and the commitment lock.
 >
 > ✓ **Commitment lock is free.** Email-OTP yourself if you keep impulse-disabling.
 >
@@ -587,7 +604,7 @@ Solo-dev, budget-light, organic-first.
 
 - Daily reply to every Play Store review, in voice, no corporate-speak.
 - Two TikTok/Reels per week. Tutorial videos, before/after screen-time clips, dev updates.
-- Reach out to 5 digital-wellbeing newsletter writers and YouTubers per week with a personalized pitch and free Touchgrass Plus codes.
+- Reach out to 5 digital-wellbeing newsletter writers and YouTubers per week with a personalized pitch. (No Plus codes — the app is free.)
 - Iterate the Play Store listing weekly based on Play Console search-term data.
 
 ### 10.4 Budget guidance
@@ -854,6 +871,10 @@ V1 ships when ALL of the following are true:
 ---
 
 ## 16. Appendix B: First Session with Claude Code — Suggested Prompt
+
+> **Historical record only — do not act on this.** It describes bootstrapping the
+> project in May 2026 and refers to files and SDK levels that no longer apply.
+> Current working instructions are in `CLAUDE.md`; current state is in `STATUS.md`.
 
 When the developer opens Claude Code in `D:\My_Projects\Touchgrass`, this is the recommended kickoff:
 

@@ -22,7 +22,7 @@ val hasReleaseSigning = keystoreProperties.getProperty("storeFile")?.isNotBlank(
 
 android {
     namespace = "com.touchgrass.app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         // Play Console app is registered under com.touchgrassinc.app (com.touchgrass.app was
@@ -30,9 +30,11 @@ android {
         // com.touchgrass.app — applicationId and namespace are independent, so no sources move.
         applicationId = "com.touchgrassinc.app"
         minSdk = 29
-        targetSdk = 35
-        versionCode = 2
-        versionName = "0.1.1"
+        // targetSdk 36 (Android 16): Google Play requires target API within 1 year of the
+        // latest Android release from Aug 31, 2026 — see Play Console policy issue (Jul 2026).
+        targetSdk = 36
+        versionCode = 3
+        versionName = "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }

@@ -41,29 +41,31 @@ The commitment lock — email-OTP yourself if you keep impulse-disabling — is 
 
 ## Status
 
-**Week 1, Day 1. Pre-release. Today is 2026-05-12.**
+**Beta. Current release 0.1.2 (versionCode 3), targeting Android 16 (API 36), minSdk 29.**
 
-This repository was opened today. There is no shippable build yet, no Play Store listing, and no signed APK. The product spec is locked (see [docs/SPEC.md](docs/SPEC.md)) and we're working through an 8-week timeline toward a V1 beta.
-
-If you're reading this hoping to install something today: thank you, follow along, and check back. If you're a developer who wants to help land detectors or OEM walkthroughs sooner, jump to [Contributing](#contributing).
+The app is feature-complete for V1 and in closed testing on Google Play. Blocking, the Trust Dashboard, the reliability watchdog, and the commitment lock all work. Known gap in test builds: the commitment-lock one-time code is not wired to a live mail server yet, so that email does not arrive during the beta. Everything else is functional.
 
 ---
 
 ## Install
 
-Touchgrass will be available on Google Play at launch.
+**Direct download:** signed APKs are published to [GitHub Releases](https://github.com/nikolozturkishvili1/Touchgrass/releases) — built by GitHub Actions from the tagged commit and signed with the project's release key. *(The first public release has not been cut yet; it lands with the 0.1.2 tag.)*
 
-- **Play Store:** *coming to Play Store at launch.*
-- **Website:** [gettouchgrass.app](https://gettouchgrass.app) — landing page and launch waitlist.
-- **F-Droid:** planned after the Play Store release stabilises.
+**Auto-updating:** add this repository to [Obtainium](https://github.com/ImranR98/Obtainium) and it will track GitHub Releases for you.
 
-There are no pre-built APKs hosted from this repo while the app is still in active development. If you want to run the in-progress build today, build from source.
+**IzzyOnDroid / F-Droid:** inclusion request planned, not yet submitted. Once listed, add the [IzzyOnDroid repo](https://apt.izzysoft.de/fdroid/) to your F-Droid client.
+
+**Google Play:** in closed testing. Production access is gated behind Google's 12-tester / 14-day requirement for new developer accounts.
+
+> Note: the Play build and the GitHub build are signed with different keys (Google re-signs Play uploads with Play App Signing). You cannot update from one to the other in place — pick one source and stay on it.
+
+**Build from source:** `./gradlew assembleRelease` with a `keystore.properties` in the project root (see `keystore.properties.example`), or `./gradlew assembleDebug` for an unsigned debug build.
 
 ---
 
 ## Build from source
 
-You'll need a recent Android Studio and JDK 17. Tested with Android Studio Ladybug; newer versions should work.
+You'll need Android Studio Meerkat (2024.3.1) or newer and JDK 17. AGP 8.9.2 is not supported by older Studio versions — Ladybug will fail to sync.
 
 1. **Clone the repo:**
 
@@ -73,9 +75,9 @@ You'll need a recent Android Studio and JDK 17. Tested with Android Studio Ladyb
    ```
 
 2. **Install prerequisites:**
-   - [Android Studio](https://developer.android.com/studio) Ladybug (2024.2) or newer.
+   - [Android Studio](https://developer.android.com/studio) Meerkat (2024.3.1) or newer — required by AGP 8.9.2.
    - JDK 17. Android Studio ships one; if you build from the command line, set `JAVA_HOME` to a JDK 17 install.
-   - Android SDK Platform 35 and Build-Tools 35.x. Android Studio will offer to install these on first sync.
+   - Android SDK Platform 36 and Build-Tools 36.x. Android Studio will offer to install these on first sync.
 
 3. **Open the project:**
    - Android Studio: *File → Open* and point at the cloned `Touchgrass` directory.
@@ -98,7 +100,7 @@ You'll need a recent Android Studio and JDK 17. Tested with Android Studio Ladyb
 5. **Install on a device:**
    - Enable developer options and USB debugging on the device.
    - With the device connected, run `./gradlew installDebug`, or use *Run* in Android Studio.
-   - Touchgrass targets API 29 (Android 10) and newer.
+   - Touchgrass runs on API 29 (Android 10) and newer, and targets API 36.
 
 6. **Grant the Accessibility permission:**
    - Open Touchgrass on the device.
@@ -160,4 +162,4 @@ GPL-3.0 is a deliberate choice. It keeps Touchgrass and any derivative work open
 
 ---
 
-*Touchgrass is built by a solo developer in public. Progress, mistakes, and ship dates all live on this repo and at [gettouchgrass.app](https://gettouchgrass.app).*
+*Touchgrass is built by a solo developer in public. Progress, mistakes, and ship dates all live on this repo.*

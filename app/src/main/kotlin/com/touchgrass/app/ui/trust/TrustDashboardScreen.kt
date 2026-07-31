@@ -193,7 +193,10 @@ private fun openUrl(
 }
 
 private const val GITHUB_URL = "https://github.com/nikolozturkishvili1/Touchgrass"
-private const val PRIVACY_URL = "https://gettouchgrass.app/privacy"
+// Points at GitHub Pages because gettouchgrass.app is not registered yet.
+// Switch back to https://gettouchgrass.app/privacy once the domain is live
+// and rebuild -- see docs/RELEASE.md section 5.
+private const val PRIVACY_URL = "https://nikolozturkishvili1.github.io/Touchgrass/privacy.html"
 
 @Preview(showBackground = true, name = "Trust Dashboard — light")
 @Composable

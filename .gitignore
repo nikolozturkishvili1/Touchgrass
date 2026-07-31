@@ -67,3 +67,10 @@ sentry.properties
 # Beta tester lists — contain testers' personal emails (PII). NEVER commit (repo is public).
 beta-testers.local.md
 *.testers.local.md
+
+# Large marketing media — keep the repo cloneable. Host these elsewhere.
+marketing/*.mp4
+marketing/gifs/
+
+# Scratch folder used to park files the desktop bridge could not delete.
+_to_delete/

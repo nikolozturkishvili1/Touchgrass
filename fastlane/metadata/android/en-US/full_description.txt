@@ -1,0 +1,35 @@
+Touchgrass turns off the parts of your apps that were built to keep you there forever, while leaving the rest of those apps working normally. You can still message friends, post, search, and watch the one video someone sent you. You just can't fall into the pit.
+
+<b>What it blocks</b>
+
+- YouTube Shorts
+- Instagram Reels - main feed, Explore reels grid, the Reels tab, and reels shared in DM
+- TikTok "For You" feed
+- Facebook Reels
+- Snapchat Spotlight
+- YouTube Shorts in Chrome
+- Short-form surfaces in Samsung Internet
+
+Everything else in those apps keeps working.
+
+<b>Why this one is different</b>
+
+<b>Reliable.</b> A watchdog notices when the blocking service has stopped and tells you before you find out mid-binge. Onboarding walks you through your specific manufacturer's battery-saver settings - Samsung, Xiaomi, OnePlus, Oppo, Vivo, Realme, Huawei - instead of just saying "go fix Android".
+
+<b>Honest about privacy.</b> Open the Trust Dashboard inside the app to see exactly what Touchgrass can and cannot see. Nothing leaves your phone. No third-party analytics. No servers. The source is public, so you can check rather than trust.
+
+<b>No ads. Ever.</b> A commitment, not a current state of the app.
+
+<b>Free, no subscription.</b> Every feature is available to everyone, including the commitment lock. There is no trial that flips into a subscription and no in-app purchase.
+
+<b>Commitment lock</b>
+
+If you keep impulse-disabling the blocker, turn on the commitment lock and disabling requires a one-time code sent to your email. It is free and always will be. The people who need it most are not the people who should have to pay for it.
+
+<b>About the accessibility permission</b>
+
+Touchgrass needs an Accessibility Service. That is the only API Android gives a third-party app for knowing which screen is open, and the only way to send a Back action to exit a feed.
+
+It reads only which screen is showing, in the apps you added to your block list. It does not read your messages, your keystrokes, or your passwords. Nothing is sent anywhere - there is no analytics and no backend for usage data. The app shows you all of this in the Trust Dashboard before it asks for the permission, not after.
+
+Licensed GPL-3.0. Source: https://github.com/nikolozturkishvili1/Touchgrass

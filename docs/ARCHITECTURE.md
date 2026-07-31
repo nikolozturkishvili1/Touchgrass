@@ -17,14 +17,14 @@ Lifted from spec §4.1; kept here as a fast reference card.
 | Language | Kotlin 2.0+ | Idiomatic Android, clean coroutines |
 | UI | Jetpack Compose (latest stable) | Declarative; fast iteration |
 | Min SDK | API 29 (Android 10) | ~95% device coverage; Accessibility API matured here |
-| Target SDK | API 35 (Android 15) | Play Store requirement |
+| Target SDK | API 36 (Android 16) | Play Store requirement (deadline Aug 31, 2026) |
 | Architecture | MVVM + Repository, single-activity | Standard, maintainable solo |
 | DI | Hilt | Google-recommended |
 | Async | Coroutines + Flow | Idiomatic Kotlin |
 | Persistence | Room (stats) + DataStore (preferences) | Standard |
 | Build | Gradle Kotlin DSL + `libs.versions.toml` | Modern best practice |
 | CI | GitHub Actions | Free for public repos |
-| Crash reporting | Sentry (optional, disclosed) or none | Privacy-first |
+| Telemetry | **None.** No analytics, no crash reporting, no Sentry. | Zero third-party telemetry is a product promise (superseded the earlier "Sentry optional" line, 2026-07) |
 
 ## 4. Module / package structure
 
@@ -314,7 +314,7 @@ graph TD
 These omissions are deliberate brand promises (spec §2.3, §11.3). Any PR that adds one of them must be rejected on sight unless the developer has explicitly approved it as a disclosed, opt-in toggle.
 
 - **No analytics SDK.** Not Firebase Analytics. Not Mixpanel. Not Amplitude. Not "just a tiny ping".
-- **No crash reporter** in the default build. Sentry is allowed *later*, opt-in, disclosed in the Trust Dashboard. Not present out of the box.
+- **No crash reporter.** Not in the default build, not later, not opt-in. The IzzyOnDroid/F-Droid inclusion request states "no tracking, no analytics SDKs of any kind" — adding one would make that false. (Superseded the earlier "Sentry allowed later" note, 2026-07.)
 - **No backend.** Touchgrass has no server. The only network call in V1 is the transactional-email API used by the optional commitment-lock OTP — disclosed in the Trust Dashboard.
 - **No code path that observes apps outside the `packageNames` allowlist** declared in `res/xml/accessibility_service_config.xml`. The Trust Dashboard claim ("we only see apps you asked us to block") is enforced by the OS at the event-delivery layer, not by polite intent inside our process. The allowlist is a single file a reviewer can diff.
 - **No ads. Ever.**

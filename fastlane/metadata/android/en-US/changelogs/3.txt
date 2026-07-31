@@ -1,0 +1,5 @@
+Now targets Android 16 (API 36). Toolchain updated alongside. No user-facing behaviour changes.
+
+Earlier in 0.1.x:
+- Fixed false "Touchgrass stopped working" notifications.
+- The app no longer re-asks for Accessibility when it is already granted.
