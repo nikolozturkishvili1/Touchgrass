@@ -11,9 +11,18 @@ Feature-complete for V1. Two distribution tracks run in parallel.
 
 ## Next action
 
-**Confirm the four GitHub Actions signing secrets exist, then tag `v0.1.2`.**
+**Push `main`, then confirm the signing secrets, then tag `v0.1.2`.**
 
-Go to
+The work is committed locally as `fafa68b` but **has not been pushed** — it was
+committed from a cloud session that cannot reach github.com. Push it from your
+machine first:
+
+```powershell
+cd D:\My_Projects\Touchgrass
+git push
+```
+
+Then go to
 `https://github.com/nikolozturkishvili1/Touchgrass/settings/secrets/actions` and
 check for `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 Set any that are missing — **by hand, in the browser. Never paste them into a chat
@@ -27,8 +36,9 @@ powershell -ExecutionPolicy Bypass -File .\RELEASE_NOW.ps1
 ```
 
 The script reads the version from `app/build.gradle.kts`, commits anything
-outstanding, pushes `main`, then asks you to confirm the secrets before it pushes
-the tag. The tag is what triggers the signed build and the public GitHub Release.
+outstanding (skipping cleanly if the tree is already clean), pushes `main`, then
+asks you to confirm the secrets before it pushes the tag. The tag is what triggers
+the signed build and the public GitHub Release.
 
 A tag pushed without the secrets fails the build and burns that version number —
 which is why the script refuses to do it unprompted.
@@ -128,7 +138,9 @@ Keep this short — newest first, one line each, drop entries older than ~10.
   README/SPEC/ARCHITECTURE; retired a mock Play-release doc that carried a wrong
   package name and category; rewrote the deployment skill; made `RELEASE_NOW.ps1`
   refuse to tag before the signing secrets are confirmed; fixed `PRIVACY_URL` to the
-  live GitHub Pages address (it pointed at the unregistered domain). Not yet tagged.
+  live GitHub Pages address (it pointed at the unregistered domain). Committed as
+  `fafa68b`. **Not pushed** (cloud session has no network route to github.com) and
+  not tagged.
 - **2026-07-22** — Bumped to target API 36 (AGP 8.9.2, Gradle 8.11.1), released as
   0.1.2 in `CHANGELOG.md`. Still uncommitted.
 - **2026-07-14** — Alt-distribution path set up: fastlane metadata, `release.yml`

@@ -26,14 +26,20 @@ Get-ChildItem -Path .git\objects -Recurse -Filter "tmp_obj_*" -ErrorAction Silen
 
 Write-Host "`n== 2. what will be committed ==" -ForegroundColor Cyan
 git add -A
-git status --short
-Write-Host ""
-if ((Read-Host "Commit and push the above? (y/n)") -ne "y") {
-    Write-Host "Stopped. Nothing was pushed." -ForegroundColor Yellow; exit 1
+$pending = git status --porcelain
+if ($pending) {
+    $pending
+    Write-Host ""
+    if ((Read-Host "Commit and push the above? (y/n)") -ne "y") {
+        Write-Host "Stopped. Nothing was pushed." -ForegroundColor Yellow; exit 1
+    }
+    Write-Host "`n== 3. committing ==" -ForegroundColor Cyan
+    $msg = Read-Host "Commit message"
+    if (-not $msg) { Write-Host "Empty message. Stopped." -ForegroundColor Yellow; exit 1 }
+    git commit -m $msg
+} else {
+    Write-Host "  Working tree already clean - nothing to commit." -ForegroundColor Green
 }
-
-Write-Host "`n== 3. committing ==" -ForegroundColor Cyan
-git commit -m "release: target API 36, fastlane metadata, public signed APK releases, doc restructure"
 
 Write-Host "`n== 4. pushing main ==" -ForegroundColor Cyan
 git push
