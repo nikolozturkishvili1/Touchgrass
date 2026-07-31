@@ -1,6 +1,6 @@
 # STATUS — Touchgrass
 
-**Updated: 2026-07-30.** Owner: Niko (solo).
+**Updated: 2026-07-31.** Owner: Niko (solo).
 Rewrite this file at the end of every session. If it is older than the last
 commit, it is lying — fix it before doing anything else.
 
@@ -11,18 +11,13 @@ Feature-complete for V1. Two distribution tracks run in parallel.
 
 ## Next action
 
-**Push `main`, then confirm the signing secrets, then tag `v0.1.2`.**
+**Confirm the four GitHub Actions signing secrets exist, then tag `v0.1.2`.**
 
-The work is committed locally as `fafa68b` but **has not been pushed** — it was
-committed from a cloud session that cannot reach github.com. Push it from your
-machine first:
+`main` is committed and pushed through `ae4dfea` — the API-36 bump, fastlane
+metadata, the `PRIVACY_URL` fix, and the doc restructure are all on GitHub. The
+working tree is clean.
 
-```powershell
-cd D:\My_Projects\Touchgrass
-git push
-```
-
-Then go to
+Go to
 `https://github.com/nikolozturkishvili1/Touchgrass/settings/secrets/actions` and
 check for `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 Set any that are missing — **by hand, in the browser. Never paste them into a chat
@@ -138,9 +133,10 @@ Keep this short — newest first, one line each, drop entries older than ~10.
   README/SPEC/ARCHITECTURE; retired a mock Play-release doc that carried a wrong
   package name and category; rewrote the deployment skill; made `RELEASE_NOW.ps1`
   refuse to tag before the signing secrets are confirmed; fixed `PRIVACY_URL` to the
-  live GitHub Pages address (it pointed at the unregistered domain). Committed as
-  `fafa68b`. **Not pushed** (cloud session has no network route to github.com) and
-  not tagged.
+  live GitHub Pages address (it pointed at the unregistered domain). Committed and
+  pushed as `fafa68b` + `ae4dfea`. Not tagged — waiting on the signing secrets.
+  Note: git write operations against this repo from a cloud Cowork session leave
+  undeletable `.git/*.lock` files. Run git locally, not through the bridge.
 - **2026-07-22** — Bumped to target API 36 (AGP 8.9.2, Gradle 8.11.1), released as
   0.1.2 in `CHANGELOG.md`. Still uncommitted.
 - **2026-07-14** — Alt-distribution path set up: fastlane metadata, `release.yml`
